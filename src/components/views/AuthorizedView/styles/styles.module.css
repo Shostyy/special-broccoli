@@ -1,0 +1,25 @@
+.mainWrapper {
+    background: linear-gradient(89.47deg, #424B5C 0.44%, #78818E 99.54%);
+    width: 100%;
+    height: 100vh;
+    display: flex;
+}
+
+
+.main {
+    flex: 1 1 0%;
+    overflow-y: auto;
+    box-sizing: border-box;
+    background: linear-gradient(89.47deg, #9CA5B7 0.44%, #B9C9DF 99.54%);
+    border-radius: 15px;
+    margin: 0 5px 20px 20px;
+
+    padding: 20px;
+    -webkit-border-radius: 15px;
+    -moz-border-radius: 15px;
+    -ms-border-radius: 15px;
+    -o-border-radius: 15px;
+}
+
+
+/*flex-1 p-4 overflow-y-auto*/

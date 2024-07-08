@@ -1,0 +1,23 @@
+.saveButton {
+    padding: 8px 16px;
+    border-radius: 4px;
+    -webkit-border-radius: 4px;
+    -moz-border-radius: 4px;
+    -ms-border-radius: 4px;
+    -o-border-radius: 4px;
+    height: 45px;
+    width: 100%;
+    border: 1px solid #c25458;
+    color: #fff;
+    background-color: #c25458;
+    transition: 0.2s;
+    -webkit-transition: 0.2s;
+    -moz-transition: 0.2s;
+    -ms-transition: 0.2s;
+    -o-transition: 0.2s;
+    margin-top: 30px;
+}
+
+.saveButton:hover {
+    background-color: #aa4649;
+}

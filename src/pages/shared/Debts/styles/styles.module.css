@@ -1,0 +1,16 @@
+.updateButton {
+    height: 50px;
+    width: 125px;
+    background-color: #fff;
+    border: 1px solid #c25458;
+    color: #c25458;
+    align-items: center;
+    justify-content: center;
+    display: flex;
+    gap: 4px;
+    border-radius: 5px;
+    -webkit-border-radius: 5px;
+    -moz-border-radius: 5px;
+    -ms-border-radius: 5px;
+    -o-border-radius: 5px;
+}

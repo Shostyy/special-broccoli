@@ -1,0 +1,59 @@
+.mainContainer {
+    display: flex;
+    width: 100vw;
+    height: 100vh;
+}
+
+.authContainer {
+    position: absolute;
+    right: 0;
+    width: 50%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background-color: rgba(255, 255, 255, 0.9);
+    padding: 20px;
+    box-sizing: border-box;
+}
+
+.logoContainer {
+    display: flex;
+    position: relative;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    min-height: 172px;
+}
+
+.title {
+    margin-top: 100px;
+    font-size: 24px;
+    font-weight: 600;
+}
+
+.logoImg {
+    width: 205px;
+}
+
+.authMessages {
+    width: 100%;
+    max-width: 400px;
+    min-height: 60px;
+    margin-bottom: 10px;
+    margin-top: 30px;
+}
+
+.authContent {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+}
+
+.languageSelector {
+    padding-top: 50px;
+    position: absolute;
+    top: 20px;
+    right: 20px;
+}
