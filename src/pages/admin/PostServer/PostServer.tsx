@@ -418,7 +418,7 @@ const PostServer: React.FC = () => {
                         value={selectedConfig}
                         onChange={handleChange}
                         id='active-set'
-                        className='mb-2'
+                        className='mb-2 w-1/2'
                         sx={{ zIndex: 10, bgcolor: '#fff' }}
                     >
                         {allConfigs?.map((config) => (

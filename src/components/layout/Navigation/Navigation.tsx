@@ -8,8 +8,6 @@ import Category from './Category';
 import logo from '../../../assets/images/logo.svg';
 import styles from './styles/styles.module.css';
 import { useTranslation } from 'react-i18next';
-import { logoutAsync } from '../../../redux/slices/loginSlice';
-import { categoriesIcons } from '../../../data/constants/icons';
 
 const Navigation: React.FC = () => {
     const userRole = useAppSelector(state => state.login.userInfo?.role.name || '');

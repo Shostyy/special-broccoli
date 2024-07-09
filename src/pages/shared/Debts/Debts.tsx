@@ -230,7 +230,9 @@ const Debts: React.FC = () => {
                     rows={debts && debts.length > 0 ? debts : emptyResult}
                     enableFiltering={true}
                     enableFooter={true}
-                    customHeaderHeight={54}
+                    customRowHeight={49}
+                    customHeaderHeight={176}
+                    density='compact'
                 />
             </div>
         );

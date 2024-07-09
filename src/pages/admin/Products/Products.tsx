@@ -89,6 +89,7 @@ const Products: React.FC = () => {
         <SimpleTable
           columns={columns}
           rows={filteredRows}
+          customRowHeight={54}
         />
       )}
     </div>

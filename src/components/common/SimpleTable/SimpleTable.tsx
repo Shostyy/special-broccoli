@@ -23,6 +23,7 @@ interface SimpleTableProps<TData extends MRT_RowData> {
     customRowHeight?: number;
     customHeaderHeight?: number;
     onRowClick?: (row: TData) => void;
+    density?: 'compact' | 'comfortable';
 }
 
 const SimpleTable = <TData extends MRT_RowData>({
@@ -34,6 +35,7 @@ const SimpleTable = <TData extends MRT_RowData>({
     customRowHeight = 54,
     customHeaderHeight = 172,
     onRowClick,
+    density = 'comfortable'
 }: SimpleTableProps<TData>) => {
     const { i18n } = useTranslation();
     const currentTableLocale = useMemo(() => {
@@ -48,7 +50,7 @@ const SimpleTable = <TData extends MRT_RowData>({
             const tableContainer = document.getElementById('tableContainer');
             if (tableContainer) {
                 const height = tableContainer.clientHeight;
-                const calculatedPageSize = Math.max(1, Math.floor((height - customHeaderHeight) / (customRowHeight)) - (enableFooter ? 2 : 0));
+                const calculatedPageSize = Math.max(1, Math.floor((height - customHeaderHeight) / (customRowHeight)) - (enableFooter ? 1 : 0));
                 setPageSize(calculatedPageSize);
             }
         };
@@ -83,6 +85,7 @@ const SimpleTable = <TData extends MRT_RowData>({
                             data={rows}
                             initialState={{
                                 showColumnFilters: true,
+                                density: density
                             }}
                             state={{
                                 pagination: { pageSize, pageIndex },
@@ -125,7 +128,7 @@ const SimpleTable = <TData extends MRT_RowData>({
                             renderBottomToolbar={({ table }) => {
                                 console.log(table);
                                 return (
-                                    <div className="pt-4 pb-1 flex h-full justify-center items-center">
+                                    <div className="pt-1 pb-1 flex h-full justify-center items-center">
                                         <StyledPagination
                                             count={table.getPageCount()}
                                             page={pageIndex + 1}

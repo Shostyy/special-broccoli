@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { useAppDispatch, useAppSelector } from '../../../types/hooks';
 import { useTranslation } from 'react-i18next';
-import { Box, LinearProgress } from '@mui/material';
+import { Box, LinearProgress, Tooltip } from '@mui/material';
 import { ModelData } from '../../../api/types/modelData';
 import { MRT_ColumnDef } from 'material-react-table';
 import { SimpleTable, UpdateButton } from '../../../components/common';
@@ -39,6 +39,11 @@ const CommercialEquipment: React.FC = () => {
             accessorKey: 'name',
             header: t('Name'),
             size: 300,
+            Cell: ({ cell }) => (
+                <div className="flex items-center h-8">
+                    {cell.row.original.name}
+                </div>
+            ),
         },
         {
             accessorKey: 'inventoryNumber',
@@ -95,6 +100,7 @@ const CommercialEquipment: React.FC = () => {
                 <SimpleTable
                     columns={columns}
                     rows={filteredRows}
+                    customRowHeight={65}
                 />
             )}
 

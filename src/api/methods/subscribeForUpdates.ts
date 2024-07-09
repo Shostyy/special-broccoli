@@ -1,3 +1,4 @@
+import { AxiosResponse } from 'axios';
 import { fetchClientFullResponse } from '../fetchClientFullResponse';
 
 type ActionFunction = () => void;
@@ -14,54 +15,49 @@ interface SubscribeOptions {
     errorDuration: number;
 }
 
-export const subscribeForUpdates = ({
-    eventSourceUrl,
-    initializeUpdateUrl,
-    dispatch,
-    updateAction,
-    fulfilledAction,
-    rejectedAction,
-    resetAction,
-    successDuration,
-    errorDuration,
-}: SubscribeOptions) => {
-    const eventSource = new EventSource(eventSourceUrl, { withCredentials: true });
+export const subscribeForUpdates = (options: SubscribeOptions) => {
+    const eventSource = new EventSource(options.eventSourceUrl, { withCredentials: true });
 
-    setTimeout(() => {
-        fetchClientFullResponse.post(initializeUpdateUrl)
-            .then((res) => {
-                if (res.status === 200) {
-                    dispatch(updateAction());
+    setTimeout(() => initializeUpdate(options, eventSource), 0);
+};
 
-                    eventSource.addEventListener('update', () => {
-                        dispatch(fulfilledAction());
-            
-                        setTimeout(() => {
-                            dispatch(resetAction());
-                        }, successDuration);
-            
-                        eventSource.removeEventListener('update', () => {})
-                        eventSource.close();
-                    });
-            
-            
-                    eventSource.onerror = (e: Event) => {
-                        dispatch(rejectedAction());
-                        eventSource.close();
-            
-                        setTimeout(() => {
-                            dispatch(resetAction());
-                        }, errorDuration);
-                    };
-                }
-            })
-            .catch(() => {
-                dispatch(rejectedAction());
-                eventSource.close();
+const initializeUpdate = (options: SubscribeOptions, eventSource: EventSource) => {
+    fetchClientFullResponse.post(options.initializeUpdateUrl)
+        .then(res => handleInitializeSuccess(res, options, eventSource))
+        .catch(() => handleInitializeError(options, eventSource));
+};
 
-                setTimeout(() => {
-                    dispatch(resetAction());
-                }, successDuration);
-            });
-    }, 0);
+const handleInitializeSuccess = (res: AxiosResponse, options: SubscribeOptions, eventSource: EventSource) => {
+    if (res.status !== 200) return;
+
+    options.dispatch(options.updateAction());
+    setupEventListeners(options, eventSource);
+};
+
+const handleInitializeError = (options: SubscribeOptions, eventSource: EventSource) => {
+    options.dispatch(options.rejectedAction());
+    eventSource.close();
+    scheduleReset(options, options.successDuration);
+};
+
+const setupEventListeners = (options: SubscribeOptions, eventSource: EventSource) => {
+    eventSource.addEventListener('update', () => handleUpdate(options, eventSource));
+    eventSource.onerror = () => handleError(options, eventSource);
+};
+
+const handleUpdate = (options: SubscribeOptions, eventSource: EventSource) => {
+    options.dispatch(options.fulfilledAction());
+    scheduleReset(options, options.successDuration);
+    eventSource.removeEventListener('update', () => {});
+    eventSource.close();
+};
+
+const handleError = (options: SubscribeOptions, eventSource: EventSource) => {
+    options.dispatch(options.rejectedAction());
+    eventSource.close();
+    scheduleReset(options, options.errorDuration);
+};
+
+const scheduleReset = (options: SubscribeOptions, duration: number) => {
+    setTimeout(() => options.dispatch(options.resetAction()), duration);
 };

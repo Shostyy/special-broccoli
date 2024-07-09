@@ -1,5 +1,4 @@
-import React from 'react';
-import { UserInfo } from '../../../api/types/userInfo';
+import React, { useState } from 'react';
 import { useAppSelector } from '../../../types/hooks';
 import { AdminRoutes } from '../../auth/AdminRoutes';
 import { ClientRoutes } from '../../auth/ClientRoutes';
@@ -7,6 +6,7 @@ import { Navigation } from '../../layout/Navigation';
 import { Header } from '../../layout/Header';
 import { PendingUpdates } from '../../layout/PendingUpdates';
 import styles from './styles/styles.module.css';
+import { UserInfo } from '../../../api/types/userInfo';
 
 interface AuthorizedViewProps {
     userInfo: UserInfo;
@@ -25,17 +25,16 @@ const AuthorizedView: React.FC<AuthorizedViewProps> = ({ userInfo }) => {
     }
 }
 
-
 const Layout: React.FC = () => {
     const userInfo = useAppSelector(state => state.login.userInfo);
+    const isNavOpen = useAppSelector(state => state.navigation.isNavigationOpen);
 
     return (
-        <div className={styles.mainWrapper}> {/* Main flex container */}
+        <div className={styles.mainWrapper}>
             <Navigation />
-            <div className="flex flex-col flex-1"> {/* Container for header and main content */}
+            <div className={styles.contentWrapper}>
                 <Header />
-                <main className={styles.main}> {/* Main content */}
-                
+                <main className={styles.main}>
                     {userInfo ? <AuthorizedView userInfo={userInfo} /> : <div>Loading...</div>}
                     <PendingUpdates />
                 </main>

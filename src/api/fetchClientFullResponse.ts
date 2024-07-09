@@ -1,6 +1,6 @@
 import axios, { AxiosRequestConfig, AxiosResponse } from 'axios';
+import { RequestBodyType, RequestMethod } from './types/fetchClientShared';
 
-type RequestMethod = 'GET' | 'POST' | 'PATCH' | 'DELETE' | 'PUT';
 
 interface ApiError {
   status: number;
@@ -12,7 +12,7 @@ function requestFullResponse<T>(
   url: string,
   method: RequestMethod = 'GET',
   data?: any,
-  contentType?: 'application/x-www-form-urlencoded' | 'application/json' | 'text/plain'
+  contentType?: RequestBodyType
 ): Promise<AxiosResponse<T>> {
   // Default content type to 'application/x-www-form-urlencoded' if not provided
   const finalContentType = contentType || 'application/x-www-form-urlencoded';
@@ -25,7 +25,7 @@ function requestFullResponse<T>(
     headers: {
       'Content-Type': finalContentType
     },
-    data: ['POST', 'PATCH', 'PUT', 'DELETE'].includes(method) ? data : undefined, // Include data only for POST, PATCH, and DELETE requests
+    data: method !== 'GET' ? data : undefined // Include data only for POST, PATCH, and DELETE requests
   };
 
   // Make the HTTP request and handle errors
@@ -58,14 +58,14 @@ function requestFullResponse<T>(
 }
 
 export const fetchClientFullResponse = {
-  // HTTP GET request
-  get: <T>(url: string) => requestFullResponse<T>(url, 'GET'),
-  // HTTP POST request
-  post: <T>(url: string, data?: any, contentType?: 'application/x-www-form-urlencoded' | 'application/json' | 'text/plain') => requestFullResponse<T>(url, 'POST', data, contentType),
-  // HTTP PATCH request
-  patch: <T>(url: string, data: any, contentType?: 'application/x-www-form-urlencoded' | 'application/json') => requestFullResponse<T>(url, 'PATCH', data, contentType),
-  // HTTP PUT request
-  put: <T>(url: string, data?: any, contentType?: 'application/x-www-form-urlencoded' | 'application/json' | 'text/plain') => requestFullResponse<T>(url, 'PUT', data, contentType),
-  // HTTP DELETE request
-  delete: <T>(url: string, data?: any, contentType?: 'application/x-www-form-urlencoded' | 'application/json' | 'text/plain') => requestFullResponse<T>(url, 'DELETE', data, contentType),
+  get: <T>(url: string) =>
+    requestFullResponse<T>(url, 'GET'),
+  post: <T>(url: string, data?: any, contentType?: 'application/x-www-form-urlencoded' | 'application/json' | 'text/plain') =>
+    requestFullResponse<T>(url, 'POST', data, contentType),
+  patch: <T>(url: string, data: any, contentType?: 'application/x-www-form-urlencoded' | 'application/json') =>
+    requestFullResponse<T>(url, 'PATCH', data, contentType),
+  put: <T>(url: string, data?: any, contentType?: 'application/x-www-form-urlencoded' | 'application/json' | 'text/plain') =>
+    requestFullResponse<T>(url, 'PUT', data, contentType),
+  delete: <T>(url: string, data?: any, contentType?: 'application/x-www-form-urlencoded' | 'application/json' | 'text/plain') =>
+    requestFullResponse<T>(url, 'DELETE', data, contentType),
 };

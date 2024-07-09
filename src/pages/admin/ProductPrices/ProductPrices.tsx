@@ -102,6 +102,8 @@ const ProductPrices: React.FC = () => {
                 <SimpleTable
                     columns={columns}
                     rows={rows}
+                    customRowHeight={54}
+                    customHeaderHeight={184}
                 />
             )}
         </div>

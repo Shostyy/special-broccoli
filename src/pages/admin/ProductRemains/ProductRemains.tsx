@@ -98,6 +98,7 @@ const ProductRemains: React.FC = () => {
                 <SimpleTable
                     columns={columns}
                     rows={rowsWithId}
+                    customRowHeight={54}
                 />
             )}
         </div>

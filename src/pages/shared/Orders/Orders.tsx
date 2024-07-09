@@ -165,8 +165,9 @@ const Orders: React.FC = () => {
                     rows={ordersData}
                     enableFiltering={true}
                     customRowHeight={49}
-                    customHeaderHeight={219}
+                    customHeaderHeight={224}
                     onRowClick={(row) => setSelectedOrder(row)}
+                    density='compact'
                 />
             )}
             {successMessage && (

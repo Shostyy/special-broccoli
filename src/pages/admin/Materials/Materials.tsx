@@ -96,6 +96,7 @@ const Materials: React.FC = () => {
         <SimpleTable
           columns={columns}
           rows={filteredRows}
+          customRowHeight={54}
         />
       )}
 

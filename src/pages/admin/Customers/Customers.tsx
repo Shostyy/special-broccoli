@@ -24,10 +24,6 @@ const Customers: React.FC = () => {
     );
   }, [customerList, filterName]);
 
-  const handleFilterChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setFilterName(event.target.value);
-  };
-
   const handleUpdate = () => {
     dispatch(updateCustomers());
   }
@@ -101,6 +97,7 @@ const Customers: React.FC = () => {
         <SimpleTable
           columns={columns}
           rows={filteredRows}
+          customHeaderHeight={231}
           customRowHeight={93}
         />
       )}
