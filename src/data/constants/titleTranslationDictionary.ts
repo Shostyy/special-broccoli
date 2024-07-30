@@ -31,7 +31,7 @@ export const titleTranslationDictionary: TitleTranslationDictionary = {
     'commercial-equipment': 'CommercialEquipment',
     'produced-report': 'ProducedReport',
     'commercial-equipment-controls': 'CommercialEquipmentCtrl',
-    'counters-drink-prices': 'ActualCountAndCalc'
+    'counters-drink-prices': 'CountersAndPrices',
 };
 
 export const titleImageDictionary: TitleImageDictionary = {
@@ -55,5 +55,5 @@ export const titleImageDictionary: TitleImageDictionary = {
     'commercial-equipment': subcategoriesIcons.coffeeMaker,
     'produced-report': subcategoriesIcons.controls,
     'commercial-equipment-controls': subcategoriesIcons.counter,
-    'counters-drink-prices': subcategoriesIcons.grocery
+    'counters-drink-prices': subcategoriesIcons.grocery,
 };

@@ -33,7 +33,7 @@ const AddRelationshipDialog: React.FC<AddRelationshipDialogProps> = ({ onClose, 
             userId: selectedUser.id,
             userLogin: selectedUser.login,
             customerId: selectedCustomer.id,
-            customerName: selectedCustomer.name
+            customerName: selectedCustomer.name,
         };
 
         relationshipApi.addRelationship(relationshipToAdd)

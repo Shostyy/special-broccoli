@@ -16,17 +16,22 @@ export const fetchProductPricesForOrdersAsync = createAsyncThunk(
     'productPricesForOrders/fetchProductPricesForOrdersAsync',
     async (tradePointId: number, { rejectWithValue }) => {
         try {
-          const response = await productPricesApi.getAllPresentProductPricesForOrdersByTradePointId(tradePointId);
-          return response;
+            const response = await productPricesApi
+                .getPresentProductPricesForOrdersByTradePointId(tradePointId);
+            return response;
         } catch (error: any) {
-          return rejectWithValue(error.message || 'Failed to fetch product prices');
+            return rejectWithValue(error.message || 'Failed to fetch product prices');
         }
-      }
+    },
 );
 
 export const updateProductPricesForOrders = (tradePointId: number) => {
     return (dispatch: any) => {
-        productPricesApi.subscribeForUpdateProductPrices(dispatch, tradePointId, true);
+        productPricesApi.subscribeForUpdateProductPrices(
+            dispatch,
+            tradePointId,
+            true,
+        );
     };
 };
 
@@ -57,18 +62,29 @@ const productPricesForOrdersSlice = createSlice({
                 state.loading = true;
                 state.errorTranslationKey = null;
             })
-            .addCase(fetchProductPricesForOrdersAsync.fulfilled, (state, action) => {
+            .addCase(fetchProductPricesForOrdersAsync.fulfilled, (
+                state,
+                action,
+            ) => {
                 state.loading = false;
                 state.errorTranslationKey = null;
                 state.productPricesForOrders = action.payload;
             })
-            .addCase(fetchProductPricesForOrdersAsync.rejected, (state, action) => {
+            .addCase(fetchProductPricesForOrdersAsync.rejected, (
+                state,
+                action,
+            ) => {
                 state.loading = false;
                 state.errorTranslationKey = action.error.message || 'Failed to fetch product prices for orders';
             })
-    }
+    },
 });
 
-export const { resetState, updatePending, updateFulfilled, updateRejected } = productPricesForOrdersSlice.actions;
+export const {
+    resetState,
+    updatePending,
+    updateFulfilled,
+    updateRejected,
+} = productPricesForOrdersSlice.actions;
 
 export default productPricesForOrdersSlice.reducer;

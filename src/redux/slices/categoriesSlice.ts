@@ -3,6 +3,7 @@ import { ExtendedUpdateSliceState } from '../shared/types/extendedUpdateSliceSta
 import { createExtendedUpdateState } from '../shared/utils/createExtendedUpdateState';
 import categoriesApi from '../../api/methods/categoriesApi';
 import { CategoryData } from '../../api/types/categoryData';
+import { UNAUTHORIZED_STATUS_CODE } from '../../data/constants/constants';
 
 export interface CategoriesState extends ExtendedUpdateSliceState {
   categories: CategoryData[] | null;
@@ -19,12 +20,12 @@ export const fetchCategoriesAsync = createAsyncThunk(
       const response = await categoriesApi.getAllCategories();
       return response;
     } catch (error: any) {
-      if (error.status === 401) {
+      if (error.status === UNAUTHORIZED_STATUS_CODE) {
         window.location.reload();
       }
       return rejectWithValue(error.message || 'Failed to fetch materials');
     }
-  }
+  },
 );
 
 export const updateCategories = () => {
@@ -43,18 +44,14 @@ const categoriesSlice = createSlice({
     },
     updatePending: (state) => {
       state.updateStatus = 'pending';
-      state.loading = true;
-      state.errorTranslationKey = null;
       state.updateMessage = 'CategoriesUpdPending';
     },
     updateFulfilled: (state) => {
       state.updateStatus = 'success';
-      state.loading = false;
       state.updateMessage = 'CategoriesUpdSuccess';
     },
     updateRejected: (state) => {
       state.updateStatus = 'error';
-      state.loading = false;
       state.updateMessage = 'CategoriesErrorMessage';
     },
   },
@@ -75,6 +72,11 @@ const categoriesSlice = createSlice({
   },
 });
 
-export const { resetState, updatePending, updateFulfilled, updateRejected } = categoriesSlice.actions;
+export const {
+  resetState,
+  updatePending,
+  updateFulfilled,
+  updateRejected,
+} = categoriesSlice.actions;
 
 export default categoriesSlice.reducer;

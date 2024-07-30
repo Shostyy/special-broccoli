@@ -3,6 +3,7 @@ import { DebtData } from '../../api/types/debtData';
 import debtsApi from '../../api/methods/debtsApi';
 import { createExtendedUpdateState } from '../shared/utils/createExtendedUpdateState';
 import { ExtendedUpdateSliceState } from '../shared/types/extendedUpdateSliceState';
+import { UNAUTHORIZED_STATUS_CODE } from '../../data/constants/constants';
 
 export interface DebtsState extends ExtendedUpdateSliceState {
   debts: DebtData[] | null;
@@ -19,13 +20,13 @@ export const fetchAllDebtsAsync = createAsyncThunk(
       const response = await debtsApi.getAllDebts(tradePointId, customerId);
       return response;
     } catch (error: any) {
-      if (error.status === 401) {
+      if (error.status === UNAUTHORIZED_STATUS_CODE) {
         window.location.reload();
       }
 
       return rejectWithValue(error.message || 'Failed to fetch debts');
     }
-  }
+  },
 );
 
 export const updateDebts = () => {
@@ -39,26 +40,22 @@ const debtsSlice = createSlice({
   initialState,
   reducers: {
     resetState: (state) => {
-        state.updateStatus = 'idle';
-        state.updateMessage = null;
+      state.updateStatus = 'idle';
+      state.updateMessage = null;
     },
     updatePending: (state) => {
-        state.updateStatus = 'pending';
-        state.loading = true;
-        state.errorTranslationKey = null;
-        state.updateMessage = 'DebtsUpdPending';
+      state.updateStatus = 'pending';
+      state.updateMessage = 'DebtsUpdPending';
     },
     updateFulfilled: (state) => {
-        state.updateStatus = 'success';
-        state.loading = false;
-        state.updateMessage = 'DebtNotification';
+      state.updateStatus = 'success';
+      state.updateMessage = 'DebtNotification';
     },
     updateRejected: (state) => {
-        state.updateStatus = 'error';
-        state.loading = false;
-        state.updateMessage = 'DebtErrorMessage';
+      state.updateStatus = 'error';
+      state.updateMessage = 'DebtErrorMessage';
     },
-},
+  },
   extraReducers: (builder) => {
     builder
       .addCase(fetchAllDebtsAsync.pending, (state) => {
@@ -77,6 +74,11 @@ const debtsSlice = createSlice({
   },
 });
 
-export const { resetState, updatePending, updateFulfilled, updateRejected } = debtsSlice.actions;
+export const {
+  resetState,
+  updatePending,
+  updateFulfilled,
+  updateRejected,
+} = debtsSlice.actions;
 
 export default debtsSlice.reducer;

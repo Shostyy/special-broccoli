@@ -1,6 +1,7 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import rolesApi from '../../api/methods/rolesApi';
 import { Role } from '../../api/types/role';
+import { UNAUTHORIZED_STATUS_CODE } from '../../data/constants/constants';
 
 export interface LoginState {
     loading: boolean;
@@ -17,13 +18,12 @@ export const fetchAllRoles = createAsyncThunk(
 
             return response;
         } catch (error: any) {
-            console.log(error);
-            if (error.status === 401) {
+            if (error.status === UNAUTHORIZED_STATUS_CODE) {
                 window.location.reload();
             }
             return null;
         }
-    }
+    },
 );
 
 const initialState: LoginState = {
@@ -53,7 +53,5 @@ const loginSlice = createSlice({
             });
     },
 });
-
-//export const {  } = loginSlice.actions;
 
 export default loginSlice.reducer;

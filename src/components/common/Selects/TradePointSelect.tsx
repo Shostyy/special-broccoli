@@ -9,6 +9,7 @@ import { useStyles } from './styles/useStyles';
 interface TradePointSelectData {
     tradePointsList: TradePointData[];
     onSelect: (selectedTradePoint: TradePointData | null) => void;
+    initialTradePoint?: TradePointData | null;
     color?: 'red' | 'white';
     width?: string | number;
     height?: string | number;
@@ -18,10 +19,11 @@ interface TradePointSelectData {
 const TradePointSelect: React.FC<TradePointSelectData> = ({
     tradePointsList,
     onSelect,
+    initialTradePoint,
     color = 'red',
     width,
     height,
-    fontSize
+    fontSize,
 }) => {
     const { t } = useTranslation();
 
@@ -37,6 +39,12 @@ const TradePointSelect: React.FC<TradePointSelectData> = ({
 
     const noOptionsText = t('SearchNotFound');
 
+    const [value, setValue] = React.useState<string | null>(initialTradePoint ? initialTradePoint.name : null);
+
+    React.useEffect(() => {
+        setValue(initialTradePoint ? initialTradePoint.name : null);
+    }, [initialTradePoint]);
+
     return (
         <Autocomplete
             disableListWrap
@@ -45,6 +53,7 @@ const TradePointSelect: React.FC<TradePointSelectData> = ({
             ListboxComponent={ListboxComponent}
             options={preparedList}
             noOptionsText={noOptionsText}
+            value={value}
             renderInput={(params) => (
                 <TextField
                     {...params}
@@ -56,13 +65,12 @@ const TradePointSelect: React.FC<TradePointSelectData> = ({
             renderOption={(props, option, state) =>
                 [props, option, state.index] as React.ReactNode
             }
-            onChange={(event, value) => {
-                const selectedTradePoint = value ? tradePointMap.get(value) : null;
+            onChange={(event, newValue) => {
+                const selectedTradePoint = newValue ? tradePointMap.get(newValue) : null;
+                setValue(newValue);
 
                 if (selectedTradePoint) {
                     onSelect(selectedTradePoint);
-                } else {
-                    onSelect(null);
                 }
             }}
             fullWidth

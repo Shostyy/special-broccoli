@@ -14,10 +14,20 @@ const loginSlice = createSlice({
   reducers: {
     toggleNavigation(state) {
       state.isNavigationOpen = !state.isNavigationOpen;
-    }
+    },
+    openNavigation(state) {
+      state.isNavigationOpen = true;
+    },
+    closeNavigation(state) {
+      state.isNavigationOpen = false;
+    },
   },
 });
 
-export const { toggleNavigation } = loginSlice.actions;
+export const { 
+  toggleNavigation, 
+  openNavigation, 
+  closeNavigation,
+} = loginSlice.actions;
 
 export default loginSlice.reducer;

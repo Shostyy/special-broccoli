@@ -13,9 +13,10 @@ export interface CustomersState {
 export const fetchCustomersAsync = createAsyncThunk(
   'users/fetchUsersAsync',
   async () => {
-    const response = await fetchClient.get<CustomerInfo[]>(`${BASE_URL}/api/users/user-customers`);
+    const response =
+      await fetchClient.get<CustomerInfo[]>(`${BASE_URL}/api/users/user-customers`);
     return response;
-  }
+  },
 );
 
 const initialState: CustomersState = {

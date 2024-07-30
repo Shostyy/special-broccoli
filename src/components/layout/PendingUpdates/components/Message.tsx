@@ -16,7 +16,7 @@ interface MessageProps {
 const Message: React.FC<MessageProps> = ({
     isMessagesCollapsed,
     status,
-    message
+    message,
 }) => {
     const { t } = useTranslation();
     const [progress, setProgress] = useState(100);
@@ -42,7 +42,7 @@ const Message: React.FC<MessageProps> = ({
     }, [status]);
 
     return (
-        <div className={`bg-white p-2 flex mb-2 rounded-lg shadow-lg relative`}>
+        <div className={'bg-white p-2 flex mb-2 rounded-lg shadow-lg relative'}>
             {isMessagesCollapsed ? (
                 <div className='bg-white p-1 flex items-center justify-center w-8 h-8'>
                     {status === 'pending' && (

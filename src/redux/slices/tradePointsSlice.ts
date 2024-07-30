@@ -3,6 +3,7 @@ import { ExtendedUpdateSliceState } from '../shared/types/extendedUpdateSliceSta
 import { createExtendedUpdateState } from '../shared/utils/createExtendedUpdateState';
 import { TradePointData } from '../../api/types/tradePointData';
 import tradePointsApi from '../../api/methods/tradePointsApi';
+import { UNAUTHORIZED_STATUS_CODE } from '../../data/constants/constants';
 
 export interface TradePointsState extends ExtendedUpdateSliceState {
   tradePoints: TradePointData[] | null;
@@ -19,13 +20,13 @@ export const fetchTradePointAsync = createAsyncThunk(
       const response = await tradePointsApi.getAllTradePoints();
       return response;
     } catch (error: any) {
-      if (error.status === 401) {
+      if (error.status === UNAUTHORIZED_STATUS_CODE) {
         window.location.reload();
       }
 
       return rejectWithValue(error.message || 'Failed to fetch materials');
     }
-  }
+  },
 );
 
 export const updateTradePoints = () => {
@@ -44,18 +45,14 @@ const tradePointsSlice = createSlice({
     },
     updatePending: (state) => {
       state.updateStatus = 'pending';
-      state.loading = true;
-      state.errorTranslationKey = null;
       state.updateMessage = 'TradesUpdPending';
     },
     updateFulfilled: (state) => {
       state.updateStatus = 'success';
-      state.loading = false;
       state.updateMessage = 'TradePointUpdSuccess';
     },
     updateRejected: (state) => {
       state.updateStatus = 'error';
-      state.loading = false;
       state.updateMessage = 'TradePointErrorMessage';
     },
   },
@@ -76,6 +73,11 @@ const tradePointsSlice = createSlice({
   },
 });
 
-export const { resetState, updatePending, updateFulfilled, updateRejected } = tradePointsSlice.actions;
+export const {
+  resetState,
+  updatePending,
+  updateFulfilled,
+  updateRejected,
+} = tradePointsSlice.actions;
 
 export default tradePointsSlice.reducer;

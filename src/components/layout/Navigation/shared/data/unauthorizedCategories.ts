@@ -8,5 +8,5 @@ export const unauthorizedCategories: Category[] = [
         name: 'Settings',
         icon: null,
         subCategory: null,
-    }
+    },
 ];

@@ -1,0 +1,107 @@
+.closeButton {
+    position: absolute;
+    right: 8px;
+    top: 8px;
+    color: #757575;
+}
+
+.statusContainer {
+    margin-bottom: 24px;
+    display: flex;
+    gap: 20px;
+}
+
+.statusPaper {
+    padding: 16px;
+    border-radius: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    max-width: fit-content;
+}
+
+.statusDot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    margin-right: 8px;
+}
+
+.progressContainer {
+    margin-bottom: 24px;
+    background-color: #f9f9f9;
+    padding: 120px 50px;
+    min-height: 200px;
+}
+
+.progressBar {
+    position: relative;
+    height: 2px;
+    background-color: #e0e0e0;
+    margin: 0 32px;
+}
+
+.progressFill {
+    position: absolute;
+    left: 0;
+    top: 0;
+    height: 100%;
+    background-color: #c25458;
+}
+
+.statusStep {
+    position: absolute;
+    transform: translateX(-50%);
+    top: -29px;
+    /* Adjust this to center the circle on the line */
+}
+
+.statusStepCircle {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.statusStepLabel {
+    position: absolute;
+    top: -40px;
+    /* Adjust this to move the label above the circle */
+    left: 50%;
+    transform: translateX(-50%);
+    width: max-content;
+    text-align: center;
+}
+
+.statusStepDate {
+    position: absolute;
+    top: 70px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: max-content;
+    text-align: center;
+    font-size: 12px;
+    color: #808080;
+}
+
+.productTable {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.productTableHead {
+    background-color: #d9d9d9;
+}
+
+.commentContainer {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 20px;
+}
+
+.totalAmount {
+    margin-top: 20px;
+    text-align: left;
+}

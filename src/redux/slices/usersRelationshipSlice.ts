@@ -13,9 +13,11 @@ export interface UsersRelationshipState {
 export const fetchUsersRelationshipAsync = createAsyncThunk(
   'users/fetchUsersRelationshipAsync',
   async () => {
-    const response = await fetchClient.get<UserRelationshipInfo[]>(`${BASE_URL}/api/users/user-customers`);
+    const response
+      = await fetchClient.get<UserRelationshipInfo[]>(`${BASE_URL}/api/users/user-customers`);
+      
     return response;
-  }
+  },
 );
 
 const initialState: UsersRelationshipState = {
@@ -31,7 +33,7 @@ const usersSlice = createSlice({
   reducers: {
     setSelectedUserRelationship(state, action) {
       state.selectedUsedRelationship = action.payload;
-    }
+    },
   },
   extraReducers: (builder) => {
     builder

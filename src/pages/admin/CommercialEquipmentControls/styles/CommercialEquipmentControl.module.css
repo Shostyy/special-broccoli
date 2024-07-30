@@ -1,0 +1,58 @@
+.container {
+    height: 90%;
+    width: 100%;
+}
+
+.flexContainer {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 16px;
+    height: 50px;
+}
+
+.popupContent {
+    height: 80vh;
+    width: 80vw;
+    background-color: #fff;
+    padding: 15px;
+    border-radius: 15px;
+    overflow-y: hidden;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.modalHeader {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    align-items: center;
+}
+
+.tableContainer {
+    height: calc(100% - 40px);
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.inputId {
+    width: 150px;
+    height: 50px;
+    background-color: #fff;
+    border: 1px solid #C25458;
+    border-radius: 5px;
+    -webkit-border-radius: 5px;
+    -moz-border-radius: 5px;
+    -ms-border-radius: 5px;
+    -o-border-radius: 5px;
+    padding-inline: 10px;
+}
+
+.loaderWrapper {
+    padding-top: 200px;
+    display: flex;
+    justify-content: center;
+    height: 100%;
+    width: 100%;
+}

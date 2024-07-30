@@ -6,13 +6,14 @@ import styles from '../styles/styles.module.css';
 interface CartButtonProps {
     totalSelectedSum: number;
     onClick: () => void;
+    tradePointSelected: boolean;
 }
 
-const CartButton: React.FC<CartButtonProps> = ({ totalSelectedSum, onClick }) => {
+const CartButton: React.FC<CartButtonProps> = ({ totalSelectedSum, onClick, tradePointSelected }) => {
     const { t } = useTranslation();
 
     return (
-        <button className={styles.cartButton} onClick={onClick}>
+        <button className={styles.cartButton} onClick={onClick} disabled={!tradePointSelected}>
             {t('SelectedProducts')}
             <ShoppingBagIcon />
             {totalSelectedSum.toFixed(2)} ₴

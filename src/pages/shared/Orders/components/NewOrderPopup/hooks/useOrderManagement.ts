@@ -5,7 +5,7 @@ import { TradePointData } from '../../../../../../api/types/tradePointData';
 import { PresentProduct } from '../../../../../../api/types/presentProduct';
 import { OrderData } from '../../../../../../api/types/orderData';
 import { fetchClientFullResponse } from '../../../../../../api/fetchClientFullResponse';
-import { BASE_URL } from '../../../../../../data/constants/constants';
+import { BASE_URL, UNAUTHORIZED_STATUS_CODE } from '../../../../../../data/constants/constants';
 import productPricesApi from '../../../../../../api/methods/productPricesApi';
 import productRemainsApi from '../../../../../../api/methods/productRemainsApi';
 import { groupProductsByCategory } from '../utils/groupProductsByCategory';
@@ -15,7 +15,7 @@ export const useOrderManagement = (
     tradePointsForOrders: TradePointData[],
     editOrder: OrderData | null | undefined,
     copyOrder: OrderData | null | undefined,
-    onSuccess: () => void
+    onSuccess: (savedOrderId: number) => void,
 ) => {
     const dispatch = useAppDispatch();
     const products = useAppSelector(state => state.products.products);
@@ -30,46 +30,60 @@ export const useOrderManagement = (
     const [searchTerm, setSearchTerm] = useState<string>('');
     const [selectedProducts, setSelectedProducts] = useState<PresentProduct[]>([]);
     const [comment, setComment] = useState('');
-
-    useEffect(() => {
-        if (editOrder || copyOrder) {
-            const orderToUse = editOrder || copyOrder;
-            if (orderToUse) {
-                const convertedItems = convertOrderItemsToPresentProducts(orderToUse);
-                setSelectedTradePoint(orderToUse.tradePoint);
-                setSelectedProducts(convertedItems);
-                setComment(orderToUse.comment);
-
-                if (copyOrder) {
-                    initiateNewOrder(orderToUse.tradePoint);
-                } else {
-                    setCurrentOrder(orderToUse);
-                }
-
-                updatePricesAndRemains(orderToUse.tradePoint);
-            }
-        }
-    }, [editOrder, copyOrder]);
+    const [unavailableList, setUnavailableList] = useState<PresentProduct[] | null>(null);
+    const [initializeError, setInitializeError] = useState<string | null>();
+    const [confirmationError, setConfirmationError] = useState<string | null>();
 
     const initiateNewOrder = useCallback((tradePoint: TradePointData) => {
         const requestData = createOrderRequestData(tradePoint);
+
+        setInitializeError(null);
 
         fetchClientFullResponse.post<OrderData>(`${BASE_URL}/api/orders`, requestData, 'application/json')
             .then(response => {
                 setCurrentOrder(response.data);
             })
-            .catch(err => console.log(err));
+            .catch((err: any) => {
+                if (err.status === UNAUTHORIZED_STATUS_CODE) {
+                    window.location.reload();
+                } else {
+                    setInitializeError('FailedToRegisterOrder');
+                }
+            });
     }, []);
+
+    useEffect(() => {
+        if (currentProductsList && selectedProducts && (currentOrder?.tradePoint.name !== selectedTradePoint?.name)) {
+            const updatedPrices: PresentProduct[] = [];
+            const unavailableProductList: PresentProduct[] = [];
+
+            selectedProducts.forEach(product => {
+                const updatedProduct = currentProductsList.find(item => item.productId === product.productId);
+                if (updatedProduct) {
+                    updatedPrices.push({
+                        ...product,
+                        price: updatedProduct.price,
+                    });
+                } else {
+                    unavailableProductList.push(product);
+                }
+            });
+
+            setSelectedProducts(updatedPrices);
+            setUnavailableList(unavailableProductList);
+        }
+    }, [currentProductsList]);
+
+
 
     const updatePricesAndRemains = useCallback((tradePoint: TradePointData) => {
         setUpdateStatus('pending');
-        setCurrentStep(1);
 
         const storedPriceIds = JSON.parse(sessionStorage.getItem('updatedPriceIds') || '[]');
         const storedRemainIds = JSON.parse(sessionStorage.getItem('updatedRemainIds') || '[]');
 
-        const updatePrices = !storedPriceIds.includes(tradePoint.id.toString());
-        const updateRemains = tradePoint.branchOfficeId && !storedRemainIds.includes(tradePoint.branchOfficeId.toString());
+        const updatePrices = !storedPriceIds.includes(tradePoint.id);
+        const updateRemains = tradePoint.branchOfficeId && !storedRemainIds.includes(tradePoint.branchOfficeId);
 
         const promises: Promise<any>[] = [];
 
@@ -102,6 +116,7 @@ export const useOrderManagement = (
                 .catch(err => {
                     console.error(err);
                     setUpdateStatus('error');
+                    setCurrentProductsList(null);
                 });
         } else {
             fetchProducts()
@@ -125,14 +140,19 @@ export const useOrderManagement = (
     const handleSelectTradePoint = useCallback((tradePoint: TradePointData | null) => {
         if (tradePoint) {
             setSelectedTradePoint(tradePoint);
+            setCurrentProductsList(null);
+            setGroupedProducts({});
             updatePricesAndRemains(tradePoint);
-            initiateNewOrder(tradePoint);
+
+            if (!copyOrder && !editOrder) {
+                initiateNewOrder(tradePoint);
+            }
         }
     }, [updatePricesAndRemains, initiateNewOrder]);
 
     const handleSelectAllCategories = useCallback(() => {
-        setExpandedCategories(prev =>
-            Object.keys(groupedProducts).reduce((acc, category) => ({ ...acc, [category]: true }), {})
+        setExpandedCategories(() =>
+            Object.keys(groupedProducts).reduce((acc, category) => ({ ...acc, [category]: true }), {}),
         );
     }, [groupedProducts]);
 
@@ -153,7 +173,7 @@ export const useOrderManagement = (
             const existingProduct = prev.find(p => p.productId === product.productId);
             if (existingProduct) {
                 return prev.map(p =>
-                    p.productId === product.productId ? { ...p, quantity: p.quantity + 1 } : p
+                    p.productId === product.productId ? { ...p, quantity: p.quantity + 1 } : p,
                 );
             } else {
                 return [...prev, { ...product, quantity: 1 }];
@@ -163,14 +183,11 @@ export const useOrderManagement = (
 
     const handleProductRemove = useCallback((product: PresentProduct) => {
         setSelectedProducts(prev => {
-            const existingProduct = prev.find(p => p.productId === product.productId);
-            if (existingProduct && existingProduct.quantity > 1) {
-                return prev.map(p =>
-                    p.productId === product.productId ? { ...p, quantity: p.quantity - 1 } : p
-                );
-            } else {
-                return prev.filter(p => p.productId !== product.productId);
-            }
+            return prev.map(p =>
+                p.productId === product.productId
+                    ? { ...p, quantity: Math.max(0, p.quantity - 1) }
+                    : p
+            );
         });
     }, []);
 
@@ -180,23 +197,120 @@ export const useOrderManagement = (
 
         return productsInCategory.filter(product =>
             product.productName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            product.productId.toString().includes(searchTerm)
+            product.productId.toString().includes(searchTerm),
         );
     }, [groupedProducts, searchTerm]);
 
     const totalSelectedSum = selectedProducts.reduce((sum, product) => sum + (product.price * product.quantity), 0);
 
-    const handleConfirmOrder = useCallback(() => {
+    const handleConfirmOrder = useCallback(async () => {
+        setConfirmationError(null);
         const order = createOrderUpdateData(currentOrder, selectedProducts, comment);
-
-        fetchClientFullResponse.put(`${BASE_URL}/api/orders`, order, 'application/json')
-            .then(() => {
-                setSelectedTradePoint(null);
-                setSelectedProducts([]);
-                onSuccess();
-            })
-            .catch((err: any) => console.log(err));
+    
+        try {
+            await fetchClientFullResponse.put(`${BASE_URL}/api/orders`, order, 'application/json');
+            setSelectedTradePoint(null);
+            setSelectedProducts([]);
+    
+            if (order.id) {
+                onSuccess(order.id);
+            }
+    
+            return true;
+        } catch (err: any) {
+            if (err.status === UNAUTHORIZED_STATUS_CODE) {
+                window.location.reload();
+            } else {
+                console.log('Error:', err);
+                setConfirmationError('OrdersUpdError');
+            }
+    
+            return false;
+        }
     }, [currentOrder, selectedProducts, comment, onSuccess]);
+
+    const handleProcessOrder = useCallback(async () => {
+        setConfirmationError(null);
+        const order = createOrderUpdateData(currentOrder, selectedProducts, comment);
+    
+        try {
+            await fetchClientFullResponse.post(`${BASE_URL}/api/orders/order/process`, order, 'application/json');
+            setSelectedTradePoint(null);
+            setSelectedProducts([]);
+    
+            if (order.id) {
+                onSuccess(order.id);
+            }
+    
+            return true;
+        } catch (err: any) {
+            if (err.status === UNAUTHORIZED_STATUS_CODE) {
+                window.location.reload();
+            } else {
+                console.log('Error:', err);
+                setConfirmationError('OrdersUpdError');
+            }
+    
+            return false;
+        }
+    }, [currentOrder, selectedProducts, comment, onSuccess]);
+    
+    const handleCloseAndSave = async () => {
+        if (currentOrder) {
+            const success = await handleConfirmOrder();
+    
+            console.log('Confirmation Error:', confirmationError);
+    
+            if (success) {
+                onSuccess(currentOrder.id);
+            }
+        }
+    }
+    
+
+    const handleCopyOrder = useCallback(async (orderToUse: OrderData) => {
+        try {
+            const tradePoint = orderToUse.tradePoint;
+            const convertedItems = convertOrderItemsToPresentProducts(orderToUse);
+
+            const requestData = createOrderRequestData(tradePoint);
+            const response = await fetchClientFullResponse.post<OrderData>(`${BASE_URL}/api/orders`, requestData, 'application/json');
+            const newOrder = response.data;
+
+            const orderUpdateData = createOrderUpdateData(newOrder, convertedItems, orderToUse.comment);
+
+            await fetchClientFullResponse.put(`${BASE_URL}/api/orders`, orderUpdateData, 'application/json');
+
+            setSelectedTradePoint(tradePoint);
+            setSelectedProducts(convertedItems);
+            setComment(orderToUse.comment);
+            setCurrentOrder(newOrder);
+
+            updatePricesAndRemains(tradePoint);
+        } catch (err: any) {
+            if (err.status === UNAUTHORIZED_STATUS_CODE) {
+                window.location.reload();
+            }
+        }
+    }, [updatePricesAndRemains, onSuccess]);
+
+    useEffect(() => {
+        if (editOrder || copyOrder) {
+            const orderToUse = editOrder || copyOrder;
+            if (orderToUse) {
+                if (copyOrder) {
+                    handleCopyOrder(orderToUse);
+                } else {
+                    const convertedItems = convertOrderItemsToPresentProducts(orderToUse);
+                    setSelectedTradePoint(orderToUse.tradePoint);
+                    setSelectedProducts(convertedItems);
+                    setComment(orderToUse.comment);
+                    setCurrentOrder(orderToUse);
+                    updatePricesAndRemains(orderToUse.tradePoint);
+                }
+            }
+        }
+    }, [editOrder, copyOrder, handleCopyOrder, updatePricesAndRemains]);
 
     return {
         selectedTradePoint,
@@ -219,6 +333,11 @@ export const useOrderManagement = (
         updateStatus,
         comment,
         setComment,
-        filteredProducts
+        filteredProducts,
+        unavailableList,
+        currentOrder,
+        initializeError,
+        confirmationError,
+        handleProcessOrder
     };
 };

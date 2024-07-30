@@ -3,6 +3,7 @@ import { MaterialData } from '../../api/types/materialData';
 import materialsApi from '../../api/methods/materialsApi';
 import { ExtendedUpdateSliceState } from '../shared/types/extendedUpdateSliceState';
 import { createExtendedUpdateState } from '../shared/utils/createExtendedUpdateState';
+import { UNAUTHORIZED_STATUS_CODE } from '../../data/constants/constants';
 
 export interface MaterialsState extends ExtendedUpdateSliceState {
   materials: MaterialData[] | null;
@@ -19,13 +20,13 @@ export const fetchMaterialsAsync = createAsyncThunk(
       const response = await materialsApi.getAllMaterials();
       return response;
     } catch (error: any) {
-      if (error.status === 401) {
+      if (error.status === UNAUTHORIZED_STATUS_CODE) {
         window.location.reload();
       }
-      
+
       return rejectWithValue(error.message || 'Failed to fetch materials');
     }
-  }
+  },
 );
 
 export const updateMaterials = () => {
@@ -44,18 +45,14 @@ const materialsSlice = createSlice({
     },
     updatePending: (state) => {
       state.updateStatus = 'pending';
-      state.loading = true;
-      state.errorTranslationKey = null;
       state.updateMessage = 'MaterialsUpdPending';
     },
     updateFulfilled: (state) => {
       state.updateStatus = 'success';
-      state.loading = false;
       state.updateMessage = 'MaterialUpdSuccess';
     },
     updateRejected: (state) => {
       state.updateStatus = 'error';
-      state.loading = false;
       state.updateMessage = 'MaterialErrorMessage';
     },
   },
@@ -76,6 +73,11 @@ const materialsSlice = createSlice({
   },
 });
 
-export const { resetState, updatePending, updateFulfilled, updateRejected } = materialsSlice.actions;
+export const {
+  resetState,
+  updatePending,
+  updateFulfilled,
+  updateRejected,
+} = materialsSlice.actions;
 
 export default materialsSlice.reducer;

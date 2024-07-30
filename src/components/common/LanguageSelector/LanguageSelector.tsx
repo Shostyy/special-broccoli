@@ -10,7 +10,7 @@ interface LanguageSelectorProps {
 
 const LanguageSelector: React.FC<LanguageSelectorProps> = ({ widthFull, onSelect }) => {
   const [isOpen, setIsOpen] = useState(false);
-  const { t, i18n } = useTranslation();
+  const { i18n } = useTranslation();
 
   const toggleDropdown = () => {
     setIsOpen(!isOpen);
@@ -35,11 +35,11 @@ const LanguageSelector: React.FC<LanguageSelectorProps> = ({ widthFull, onSelect
 
   const languageDisplay: { [key: string]: string } = {
     uk: 'UA',
-    en: 'EN'
+    en: 'EN',
   };
 
   return (
-    <div className={`relative z-50 ${widthFull ? 'w-full' : 'w-20'}`}>
+    <div className={`relative z-40 ${widthFull ? 'w-full' : 'w-20'}`}>
       <button
         onClick={toggleDropdown}
         id="language-selector"

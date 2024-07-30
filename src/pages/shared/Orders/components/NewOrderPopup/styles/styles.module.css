@@ -117,8 +117,9 @@
 }
 
 .confirmButton:disabled {
-    background-color: #d3d3d3;
+    filter: grayscale(0.5);
     cursor: not-allowed;
+    -webkit-filter: grayscale(0.5);
 }
 
 .searchContainer {
@@ -155,6 +156,12 @@
     cursor: pointer;
     font-size: 16px;
     margin-left: 10px;
+}
+
+.cartButton:disabled {
+    filter: grayscale(0.5);
+    -webkit-filter: grayscale(0.5);
+    cursor: not-allowed;
 }
 
 .cartButtonText {

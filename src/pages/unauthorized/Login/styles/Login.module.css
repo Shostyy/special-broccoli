@@ -1,0 +1,60 @@
+.form {
+    width: 400px;
+}
+
+.inputGroup {
+    margin-bottom: 1.5rem;
+}
+
+.label {
+    display: block;
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: #4a5568;
+}
+
+.input {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    margin-top: 0.25rem;
+    background-color: transparent;
+    border: none;
+    border-bottom: 2px solid #a0aec0;
+    font-size: 1rem;
+}
+
+.input:focus {
+    outline: none;
+    border-color: #000;
+}
+
+.errorMessage {
+    color: #e53e3e;
+    font-size: 0.875rem;
+    margin-top: 0.25rem;
+}
+
+.buttonContainer {
+    display: flex;
+    width: 100%;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 1.5rem;
+}
+
+.forgotPasswordContainer {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.forgotPasswordButton {
+    color: #000;
+    text-decoration: underline;
+    font-weight: 600;
+    font-size: 1rem;
+}
+
+.forgotPasswordButton:hover {
+    color: #e53e3e;
+}

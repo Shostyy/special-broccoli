@@ -3,6 +3,7 @@ import { ModelData } from '../../api/types/modelData';
 import modelsApi from '../../api/methods/modelsApi';
 import { createExtendedUpdateState } from '../shared/utils/createExtendedUpdateState';
 import { ExtendedUpdateSliceState } from '../shared/types/extendedUpdateSliceState';
+import { UNAUTHORIZED_STATUS_CODE } from '../../data/constants/constants';
 
 export interface ModelsState extends ExtendedUpdateSliceState {
   models: ModelData[] | null;
@@ -19,13 +20,13 @@ export const fetchModelsAsync = createAsyncThunk(
       const response = await modelsApi.getAllModels();
       return response;
     } catch (error: any) {
-      if (error.status === 401) {
+      if (error.status === UNAUTHORIZED_STATUS_CODE) {
         window.location.reload();
       }
 
       return rejectWithValue(error.message || 'Failed to fetch models');
     }
-  }
+  },
 );
 
 export const updateModels = () => {
@@ -44,18 +45,14 @@ const modelsSlice = createSlice({
     },
     updatePending: (state) => {
       state.updateStatus = 'pending';
-      state.loading = true;
-      state.errorTranslationKey = null;
       state.updateMessage = 'ModelsUpdPending';
     },
     updateFulfilled: (state) => {
       state.updateStatus = 'success';
-      state.loading = false;
       state.updateMessage = 'ModelUpdSuccess';
     },
     updateRejected: (state) => {
       state.updateStatus = 'error';
-      state.loading = false;
       state.updateMessage = 'ModelErrorMessage';
     },
   },
@@ -77,6 +74,11 @@ const modelsSlice = createSlice({
   },
 });
 
-export const { resetState, updatePending, updateFulfilled, updateRejected } = modelsSlice.actions;
+export const {
+  resetState,
+  updatePending,
+  updateFulfilled,
+  updateRejected,
+} = modelsSlice.actions;
 
 export default modelsSlice.reducer;

@@ -40,7 +40,7 @@ export const appIcons = {
     closeRed: closeRedIcon,
     addRed: addRed,
     arrowBottom: arrowBottomIcon,
-    bag: bagIcon
+    bag: bagIcon,
 }
 
 export const categoriesIcons = {
@@ -50,7 +50,7 @@ export const categoriesIcons = {
     list: listIcon,
     reports: reportsIcon,
     settings: settingsIcon,
-    logout: logoutIcon
+    logout: logoutIcon,
 }
 
 export const subcategoriesIcons = {
@@ -72,5 +72,5 @@ export const subcategoriesIcons = {
     counter: counterIcon, 
     grocery: groceryIcon,
     mailbox: mailboxIcon,
-    pen: penIcon
+    pen: penIcon,
 }

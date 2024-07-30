@@ -4,6 +4,7 @@ import { Box } from '@mui/material';
 import ProductList from './ProductList';
 import styles from '../styles/styles.module.css';
 import { PresentProduct } from '../../../../../../api/types/presentProduct';
+import ErrorSuccessMessage from '../../../../../../components/common/ErrorSuccessMessage/ErrorSuccessMessage';
 
 interface ConfirmationStepProps {
     selectedProducts: PresentProduct[];
@@ -15,6 +16,7 @@ interface ConfirmationStepProps {
     setComment: React.Dispatch<React.SetStateAction<string>>;
     onBack: () => void;
     onConfirm: () => void;
+    confirmationError: string | null | undefined;
 }
 
 const ConfirmationStep: React.FC<ConfirmationStepProps> = ({
@@ -22,11 +24,11 @@ const ConfirmationStep: React.FC<ConfirmationStepProps> = ({
     handleProductSelect,
     handleProductRemove,
     setSelectedProducts,
-    totalSelectedSum,
     comment,
     setComment,
     onBack,
-    onConfirm
+    onConfirm,
+    confirmationError,
 }) => {
     const { t } = useTranslation();
 
@@ -39,9 +41,6 @@ const ConfirmationStep: React.FC<ConfirmationStepProps> = ({
                 setSelectedProducts={setSelectedProducts}
                 displayType="selected"
             />
-            <span className={styles.totalSum}>
-                {t('Sum')}: {totalSelectedSum.toFixed(2)} ₴
-            </span>
             <div className={styles.commentSection}>
                 <label htmlFor="comment" className={styles.commentLabel}>{t('Comment')}</label>
                 <textarea
@@ -49,15 +48,25 @@ const ConfirmationStep: React.FC<ConfirmationStepProps> = ({
                     className={styles.commentInput}
                     placeholder={t('CommentToOrder')}
                     rows={4}
+                    maxLength={255}
                     value={comment}
                     onChange={(e) => setComment(e.target.value)}
                 />
+            </div>
+            <div className="h-6">
+                {confirmationError && (
+                    <span className="text-red-500">{t(confirmationError)}</span>
+                )}
             </div>
             <Box className={styles.confirmationButtons}>
                 <button onClick={onBack} className={styles.backButton}>
                     {t('ReturnToSelection')}
                 </button>
-                <button onClick={onConfirm} className={styles.confirmButton}>
+                <button
+                    onClick={onConfirm}
+                    className={styles.confirmButton}
+                    disabled={selectedProducts.length === 0}
+                >
                     {t('ConfirmOrder')}
                 </button>
             </Box>

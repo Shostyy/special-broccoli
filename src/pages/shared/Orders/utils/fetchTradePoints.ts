@@ -1,6 +1,6 @@
 import { fetchClientFullResponse } from '../../../../api/fetchClientFullResponse';
 import { TradePointData } from '../../../../api/types/tradePointData';
-import { BASE_URL } from '../../../../data/constants/constants';
+import { BASE_URL, UNAUTHORIZED_STATUS_CODE } from '../../../../data/constants/constants';
 
 export const fetchTradePoints = async (
     setTradePointsForOrders: React.Dispatch<React.SetStateAction<TradePointData[] | null>>,
@@ -13,10 +13,10 @@ export const fetchTradePoints = async (
             const tradePointIds = tradePointsResponse.data.map(tradePoint => tradePoint.id);
             setTradePointIds(tradePointIds);
         }
-    } catch (err) {
-        console.error(err);
-    } finally {
-        console.log('Trade points fetched.');
+    } catch (err: any) {
+        if (err.status === UNAUTHORIZED_STATUS_CODE) {
+            window.location.reload();
+        }
     }
 };
 

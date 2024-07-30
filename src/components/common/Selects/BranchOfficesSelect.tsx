@@ -21,7 +21,7 @@ const BranchOfficesSelect: React.FC<BranchOfficesSelectData> = ({
     color = 'red',
     width,
     height,
-    fontSize
+    fontSize,
 }) => {
     const { t } = useTranslation();
 

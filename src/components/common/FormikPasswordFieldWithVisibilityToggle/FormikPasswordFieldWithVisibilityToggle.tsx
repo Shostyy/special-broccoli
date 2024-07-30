@@ -19,18 +19,18 @@ const FormikPasswordFieldWithVisibilityToggle: React.FC<ShowHideWrapper> = ({ id
     };
 
     const inputClasses = underlined
-        ? "mt-1 block w-full px-4 py-3 border-b bg-transparent focus:outline-none focus:border-black sm:text-base border-b-2 border-gray-500"
-        : "mt-1 block w-full px-4 py-3 border border-black rounded-md shadow-sm focus:outline-none focus:border-gray-300 sm:text-base";
+        ? 'mt-1 block w-full px-4 py-3 border-b bg-transparent focus:outline-none focus:border-black sm:text-base border-b-2 border-gray-500'
+        : 'mt-1 block w-full px-4 py-3 border border-black rounded-md shadow-sm focus:outline-none focus:border-gray-300 sm:text-base';
 
     const buttonClasses = underlined
-        ? "absolute inset-y-0 right-3 flex items-center text-gray-500"
-        : "absolute inset-y-0 right-3 flex items-center px-3 text-gray-500";
+        ? 'absolute inset-y-0 right-3 flex items-center text-gray-500'
+        : 'absolute inset-y-0 right-3 flex items-center px-3 text-gray-500';
 
     return (
         <>
             <div className="relative">
                 <Field
-                    type={showPassword ? "text" : "password"}
+                    type={showPassword ? 'text' : 'password'}
                     id={idAndName}
                     name={idAndName}
                     placeholder={t(placeholderTranslationKey)}

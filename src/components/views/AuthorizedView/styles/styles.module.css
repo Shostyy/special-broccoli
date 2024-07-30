@@ -15,6 +15,7 @@
 
 .main {
     flex-grow: 1;
+    max-height: 85%;
     box-sizing: border-box;
     background: linear-gradient(89.47deg, #9CA5B7 0.44%, #B9C9DF 99.54%);
     border-radius: 15px;

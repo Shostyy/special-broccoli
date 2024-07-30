@@ -29,11 +29,11 @@ const PendingUpdates: React.FC = () => {
     const hasPendingUpdates = Object.values(updates).some(update => update.updateStatus !== 'idle');
 
     return (
-        <div className={`fixed bottom-0 right-0 m-2 transition-all block z-50`}>
+        <div className={'fixed bottom-0 right-0 m-2 transition-all block z-50'}>
             {/* Toggle button for collapsing/expanding messages */}
             {false && hasPendingUpdates && (
                 <IconButton
-                    className={`absolute -bottom-2 right-7`}
+                    className={'absolute -bottom-2 right-7'}
                     onClick={() => setIsMessagesCollapsed(!isMessagesCollapsed)}
                     aria-label={isMessagesCollapsed ? 'Collapse Messages' : 'Expand Messages'}
                 >

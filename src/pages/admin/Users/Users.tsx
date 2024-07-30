@@ -38,7 +38,7 @@ const Users: React.FC = () => {
                         exclusive
                         onChange={handleChange}
                         aria-label="Table Mode"
-                        sx={{bgcolor: '#fff'}}
+                        sx={{ bgcolor: '#fff' }}
                     >
                         <ToggleButton value="users">{t('Users')}</ToggleButton>
                         <ToggleButton value="relationships">{t('Relationships')}</ToggleButton>
@@ -47,14 +47,11 @@ const Users: React.FC = () => {
                 {tableMode === 'users' && <UsersTable />}
                 {tableMode === 'relationships' && (
                     <>
-                        {/* Render RelationshipTable component here */}
                         <RelationshipTable />
-                        {/* Render ManageUserRelationship component here */}
                         <ManageUserRelationship />
                     </>
                 )}
             </div>
-            {/* Placeholder for EditUserForm or any other component */}
         </div>
     );
 }

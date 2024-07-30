@@ -1,7 +1,13 @@
-import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import { fetchClient } from '../../api/fetchClient';
 import { UserInfo } from '../../api/types/userInfo';
-import { BASE_URL } from '../../data/constants/constants';
+import {
+  createSlice,
+  createAsyncThunk,
+} from '@reduxjs/toolkit';
+import {
+  BASE_URL,
+  UNAUTHORIZED_STATUS_CODE,
+} from '../../data/constants/constants';
 
 export interface UsersState {
   loading: boolean;
@@ -15,16 +21,17 @@ export const fetchUsersAsync = createAsyncThunk(
   'users/fetchUsersAsync',
   async () => {
     try {
-      const response = await fetchClient.get<UserInfo[]>(`${BASE_URL}/api/users`);
+      const response
+        = await fetchClient.get<UserInfo[]>(`${BASE_URL}/api/users`);
+
       return response;
     } catch (error: any) {
-      if (error.response.status === 401) {
+      if (error.response.status === UNAUTHORIZED_STATUS_CODE) {
         window.location.reload();
       }
       return null;
     }
-    
-  }
+  },
 );
 
 const initialState: UsersState = {
@@ -40,7 +47,7 @@ const usersSlice = createSlice({
   reducers: {
     setSelectedUser(state, action) {
       state.selectedUsed = action.payload;
-    }
+    },
   },
   extraReducers: (builder) => {
     builder

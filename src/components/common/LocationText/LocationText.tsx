@@ -13,9 +13,6 @@ const LocationText: React.FC = () => {
     if (location && location.pathname) {
       const normalizedPath = location.pathname.toLowerCase().trim().replace('/', '');
       const translation = titleTranslationDictionary[normalizedPath];
-      //const image = titleImageDictionary[normalizedPath]; TODO fix image, currently gray should be red
-      //console.log(image);
-      //setLocationIcon(image);
       setTranslatedText(t(translation));
     } else {
       document.title = 'Client Office';

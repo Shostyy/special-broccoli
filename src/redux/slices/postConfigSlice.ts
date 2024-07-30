@@ -20,7 +20,7 @@ export const fetchAllConfigs = createAsyncThunk(
         } catch (error: any) {
             return rejectWithValue(error.message || 'Failed to fetch all post configs');
         }
-    }
+    },
 );
 
 // Async thunk to fetch current config
@@ -30,24 +30,26 @@ export const fetchCurrentConfig = createAsyncThunk(
         try {
             const response = await postServerApi.fetchCurrentConfig();
             return response;
-        } catch(error: any) {
-            rejectWithValue(error.message || 'Failed to fetch current post config');
+        } catch (error: any) {
+            return rejectWithValue(error.message || 'Failed to fetch current post config');
         }
-    }
+    },
 );
 
 const initialState: EmailConfigState = {
     loading: false,
     error: null,
     allConfigs: null,
-    currentConfig: null
+    currentConfig: null,
 };
 
 const postConfigSlice = createSlice({
     name: 'postConfig',
     initialState,
     reducers: {
-        resetState: state => state = initialState,
+        resetState: (state) => {
+            Object.assign(state, initialState);
+        },
     },
     extraReducers: (builder) => {
         builder
@@ -71,7 +73,7 @@ const postConfigSlice = createSlice({
             })
             .addCase(fetchCurrentConfig.fulfilled, (state, action) => {
                 state.loading = false;
-                state.currentConfig = action.payload || null;//TODO remove
+                state.currentConfig = action.payload || null;
             })
             .addCase(fetchCurrentConfig.rejected, (state, action) => {
                 state.loading = false;

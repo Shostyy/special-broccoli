@@ -1,4 +1,4 @@
-import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
+import { createSlice } from '@reduxjs/toolkit';
 import { createExtendedUpdateState } from '../shared/utils/createExtendedUpdateState';
 import { ExtendedUpdateSliceState } from '../shared/types/extendedUpdateSliceState';
 import { OrderData } from '../../api/types/orderData';
@@ -12,9 +12,9 @@ const initialState: OrdersState = createExtendedUpdateState({
     orders: null,
 });
 
-export const updateOrders = () => {
+export const updateOrders = (tpIds: number[]) => {
     return (dispatch: any) => {
-        ordersApi.subscribeForUpdateOrders(dispatch);
+        ordersApi.subscribeForUpdateOrders(dispatch, tpIds);
     };
 }
 
@@ -34,23 +34,24 @@ const ordersSlice = createSlice({
         },
         updatePending: (state) => {
             state.updateStatus = 'pending';
-            state.loading = true;
-            state.errorTranslationKey = null;
             state.updateMessage = 'OrdersUpdPending';
-        },//TODO messages
+        },
         updateFulfilled: (state) => {
             state.updateStatus = 'success';
-            state.loading = false;
             state.updateMessage = 'OrdersUpdSuccess';
         },
         updateRejected: (state) => {
             state.updateStatus = 'error';
-            state.loading = false;
             state.updateMessage = 'OrdersUpdError';
         },
     },
 });
 
-export const { resetState, updatePending, updateFulfilled, updateRejected } = ordersSlice.actions;
+export const {
+    resetState,
+    updatePending,
+    updateFulfilled,
+    updateRejected,
+} = ordersSlice.actions;
 
 export default ordersSlice.reducer;

@@ -11,7 +11,7 @@ export const convertOrderItemsToPresentProducts = (order: OrderData): PresentPro
         unit: item.unit,
         quantity: item.quantity,
         price: item.price,
-        present: true
+        present: true,
     }));
 };
 
@@ -32,6 +32,6 @@ export const createOrderUpdateData = (currentOrder: OrderData | null, selectedPr
     return {
         ...currentOrder,
         items: orderItems,
-        comment: comment
+        comment: comment,
     };
 };

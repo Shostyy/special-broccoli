@@ -5,7 +5,8 @@ import { useTranslation } from 'react-i18next';
 import { useAppDispatch, useAppSelector } from '../../../types/hooks';
 import { fetchAllRoles } from '../../../redux/slices/registerNewUserSlice';
 import rolesApi from '../../../api/methods/rolesApi';
-import styles from './styles/styles.module.css'
+import styles from './styles/Roles.module.css';
+import { ADMIN_ROLE, CLIENT_ROLE } from '../../../data/constants/constants';
 
 const Roles: React.FC = () => {
     const dispatch = useAppDispatch();
@@ -23,7 +24,7 @@ const Roles: React.FC = () => {
 
     const handleDelete = (roleId: number, roleName: string) => {
         if (selectedRoleId !== null) {
-            if (roleName === 'ADMIN' || roleName === 'CLIENT') {
+            if (roleName === ADMIN_ROLE || roleName === CLIENT_ROLE) {
                 setDeleteErrorMessage(t('CannotDeleteRole'));
                 return;
             }
@@ -46,10 +47,10 @@ const Roles: React.FC = () => {
 
     const formik = useFormik({
         initialValues: {
-            roleName: ''
+            roleName: '',
         },
         validationSchema: Yup.object({
-            roleName: Yup.string().required(t('EnterNewRole'))
+            roleName: Yup.string().required(t('EnterNewRole')),
         }),
         onSubmit: async (values, { resetForm }) => {
             rolesApi.addRole(values.roleName)
@@ -61,7 +62,7 @@ const Roles: React.FC = () => {
                 .catch(() => {
                     setCreateErrorMessage(t('RoleExistNotification'));
                 });
-        }
+        },
     });
 
     const handleRoleSelection = (roleId: number | null) => {
@@ -76,9 +77,8 @@ const Roles: React.FC = () => {
         setCreateErrorMessage(null);
     };
 
-    // Handle case where allRoles is not available yet or is empty
     if (!allRoles || allRoles.length === 0) {
-        return null; // or render a loading indicator, error message, etc.
+        return null;
     }
 
     return (

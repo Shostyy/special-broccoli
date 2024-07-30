@@ -18,30 +18,15 @@ const TradePointSelection: React.FC<TradePointSelectionProps> = ({
     tradePointsForOrders,
     onSelect,
     editOrder,
-    copyOrder
+    copyOrder,
 }) => {
     const { t } = useTranslation();
-
-    if (editOrder || copyOrder) {
-        return (
-            <div className={styles.selectedTradePoint}>
-                {selectedTradePoint?.name || t('NoTradePointSelected')}
-            </div>
-        );
-    }
-
-    if (tradePointsForOrders.length === 1) {
-        return (
-            <div className={styles.selectedTradePoint}>
-                {tradePointsForOrders[0]?.name || t('NoTradePointSelected')}
-            </div>
-        );
-    }
 
     return (
         <TradePointSelect
             tradePointsList={tradePointsForOrders}
             onSelect={onSelect}
+            initialTradePoint={selectedTradePoint}
             width={270}
             height={56}
         />

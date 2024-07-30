@@ -7,7 +7,7 @@ interface StyleProps {
     fontSize?: string | number;
 }
 
-export const useStyles = makeStyles<Theme, StyleProps>((theme: Theme) => ({
+export const useStyles = makeStyles<Theme, StyleProps>(() => ({
     autocomplete: (props) => ({
         width: props.width || 300,
         '& .MuiOutlinedInput-root': {
@@ -16,7 +16,7 @@ export const useStyles = makeStyles<Theme, StyleProps>((theme: Theme) => ({
         },
         '& .MuiOutlinedInput-input': {
             height: '100%', // Ensure input takes the full height
-            boxSizing: 'border-box', 
+            boxSizing: 'border-box',
         },
         '& .MuiOutlinedInput-root .MuiOutlinedInput-notchedOutline': {
             borderColor: '#c25458', // Customize the border color
@@ -30,6 +30,12 @@ export const useStyles = makeStyles<Theme, StyleProps>((theme: Theme) => ({
         '& .MuiAutocomplete-option': {
             backgroundColor: '#c25458', // Customize the option background color
         },
+        '& .MuiAutocomplete-option[data-focus="true"]': {
+            backgroundColor: '#f8d7da', // Customize the focused option background color
+        },
+        '& .MuiAutocomplete-option[aria-selected="true"]': {
+            backgroundColor: '#f8d7da', // Customize the selected option background color
+        },
     }),
     autocompleteWhite: (props) => ({
         width: props.width || 400,
@@ -40,7 +46,6 @@ export const useStyles = makeStyles<Theme, StyleProps>((theme: Theme) => ({
         '& .MuiOutlinedInput-input': {
             height: '100%', // Ensure input takes the full height
             boxSizing: 'border-box',
-
         },
         '& .MuiOutlinedInput-root .MuiOutlinedInput-notchedOutline': {
             borderColor: '#000', // Adjusted border color for visibility
@@ -61,12 +66,15 @@ export const useStyles = makeStyles<Theme, StyleProps>((theme: Theme) => ({
             borderColor: '#555', // Adjusted border color on focus
         },
         '& .MuiAutocomplete-option': {
-            backgroundColor: '#000', // White background for options
+            backgroundColor: '#fff', // White background for options
             color: '#000', // Default text color for options
         },
         '& .MuiAutocomplete-option[data-focus="true"]': {
-            backgroundColor: '#555', // Adjusted background color of focused option
+            backgroundColor: '#eee', // Adjusted background color of focused option
             color: '#000', // Adjusted text color of focused option
+        },
+        '& .MuiAutocomplete-option[aria-selected="true"]': {
+            backgroundColor: '#f8d7da', // Customize the selected option background color
         },
     }),
 }));

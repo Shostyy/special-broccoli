@@ -20,12 +20,24 @@ const unauthorizedViewSlice = createSlice({
     name: 'unauthorizedView',
     initialState,
     reducers: {
-        setErrorMessage: (state, action: PayloadAction<{ title: string, message: string, additionalInfo?: string}>) => {
+        setErrorMessage: (
+            state,
+            action: PayloadAction<{
+                title: string,
+                message: string,
+                additionalInfo?: string,
+            }>,
+        ) => {
             state.errorMessageTitle = action.payload.title;
             state.errorMessage = action.payload.message;
-            state.additionalInfo = action.payload.additionalInfo ? action.payload.additionalInfo : null;
+            state.additionalInfo = action.payload.additionalInfo
+                ? action.payload.additionalInfo
+                : null;
         },
-        setSuccessMessage: (state, action: PayloadAction<{ title: string, message: string }>) => {
+        setSuccessMessage: (
+            state,
+            action: PayloadAction<{ title: string, message: string }>,
+        ) => {
             state.successMessageTitle = action.payload.title;
             state.successMessage = action.payload.message;
         },
@@ -39,6 +51,10 @@ const unauthorizedViewSlice = createSlice({
     },
 });
 
-export const { setErrorMessage, setSuccessMessage, resetState } = unauthorizedViewSlice.actions;
+export const {
+    setErrorMessage,
+    setSuccessMessage,
+    resetState,
+} = unauthorizedViewSlice.actions;
 
 export default unauthorizedViewSlice.reducer;

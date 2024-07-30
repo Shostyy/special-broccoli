@@ -21,6 +21,8 @@ import productPrices from '../slices/productPricesSlice';
 import productPricesForOrders from '../slices/productPricesForOrdersSlice';
 import unauthorizedViewReducer from '../slices/unauthorizedViewSlice';
 import ordersReducer from '../slices/ordersSlice';
+import appErrorReducer from '../slices/appErrorSlice';
+import commercialEquipmentControlSlice from '../slices/commercialEquipmentControlSlice';
 
 /**
  * The root state type inferred from the store's reducers.
@@ -69,6 +71,8 @@ const store = configureStore({
     pricesForOrders: productPricesForOrders,
     unauthorizedView: unauthorizedViewReducer,
     orders: ordersReducer,
+    appError: appErrorReducer,
+    commercialEquipmentControl: commercialEquipmentControlSlice,
   },
   devTools: process.env.NODE_ENV !== 'production',
 });

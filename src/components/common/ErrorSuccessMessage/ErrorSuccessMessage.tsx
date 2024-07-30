@@ -12,7 +12,7 @@ const ErrorSuccessMessage: React.FC<ErrorSuccessMessageProps> = ({
     titleTranslationKey: title,
     messageTranslationKey: message,
     type,
-    additionalInfo
+    additionalInfo,
 }) => {
     const { t } = useTranslation();
     

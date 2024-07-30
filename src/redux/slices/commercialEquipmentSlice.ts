@@ -3,13 +3,14 @@ import commercialEquipmentApi from '../../api/methods/commercialEquipmentApi';
 import { CommercialEquipment } from '../../api/types/commercialEquipment';
 import { createExtendedUpdateState } from '../shared/utils/createExtendedUpdateState';
 import { ExtendedUpdateSliceState } from '../shared/types/extendedUpdateSliceState';
+import { UNAUTHORIZED_STATUS_CODE } from '../../data/constants/constants';
 
 export interface CommercialEquipmentState extends ExtendedUpdateSliceState {
   commercialEquipment: CommercialEquipment[] | null;
 }
 
 const initialState: CommercialEquipmentState = createExtendedUpdateState({
-  commercialEquipment: null
+  commercialEquipment: null,
 });
 
 export const fetchCommercialEquipmentAsync = createAsyncThunk(
@@ -19,13 +20,13 @@ export const fetchCommercialEquipmentAsync = createAsyncThunk(
       const response = await commercialEquipmentApi.getAllCommercialEquipment();
       return response;
     } catch (error: any) {
-      if (error.status === 401) {
+      if (error.status === UNAUTHORIZED_STATUS_CODE) {
         window.location.reload();
       }
-      
+
       return rejectWithValue(error.message || 'Failed to fetch commercial equipment');
     }
-  }
+  },
 );
 
 export const updateCommercialEquipment = () => {
@@ -44,18 +45,14 @@ const commercialEquipment = createSlice({
     },
     updatePending: (state) => {
       state.updateStatus = 'pending';
-      state.loading = true;
-      state.errorTranslationKey = null;
       state.updateMessage = 'CommercialsUpdPending';
     },
     updateFulfilled: (state) => {
       state.updateStatus = 'success';
-      state.loading = false;
       state.updateMessage = 'CommercialEquipmentUpdSuccess';
     },
     updateRejected: (state) => {
       state.updateStatus = 'error';
-      state.loading = false;
       state.updateMessage = 'CommercialEquipmentErrorMessage';
     },
   },
@@ -72,11 +69,15 @@ const commercialEquipment = createSlice({
       .addCase(fetchCommercialEquipmentAsync.rejected, (state, action) => {
         state.loading = false;
         state.errorTranslationKey = action.payload as string;
-        //state.models = null;
       });
   },
 });
 
-export const { resetState, updatePending, updateFulfilled, updateRejected } = commercialEquipment.actions;
+export const {
+  resetState,
+  updatePending,
+  updateFulfilled,
+  updateRejected,
+} = commercialEquipment.actions;
 
 export default commercialEquipment.reducer;

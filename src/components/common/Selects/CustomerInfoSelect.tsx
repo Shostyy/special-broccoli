@@ -21,7 +21,7 @@ const CustomerInfoSelect: React.FC<CustomerInfoSelectData> = ({
     color = 'red',
     width,
     height,
-    fontSize
+    fontSize,
 }) => {
     const { t } = useTranslation();
 
@@ -33,7 +33,7 @@ const CustomerInfoSelect: React.FC<CustomerInfoSelectData> = ({
 
     const preparedList = customersList.map(customer => customer.customerName);
 
-    const classes = useStyles({width, height, fontSize});
+    const classes = useStyles({ width, height, fontSize });
 
     const noOptionsText = t('SearchNotFound');
 

@@ -1,5 +1,4 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { DataGrid, GridColDef } from '@mui/x-data-grid';
 import { useAppDispatch, useAppSelector } from '../../../types/hooks';
 import { useTranslation } from 'react-i18next';
 import { ukUA, enUS } from '@mui/x-data-grid/locales';
@@ -23,7 +22,7 @@ const MaterialDataTable: React.FC = () => {
 
   const filteredRows = useMemo(() => {
     return categoriesList?.filter((branchOffice: BranchOffice) =>
-      branchOffice.name.toLowerCase().includes(filterName.toLowerCase())
+      branchOffice.name.toLowerCase().includes(filterName.toLowerCase()),
     );
   }, [categoriesList, filterName]);
 

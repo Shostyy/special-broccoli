@@ -110,11 +110,11 @@ export const adminCategories: Category[] = [
                 icon: subcategoriesIcons.counter,
             },
             {
-                name: 'ActualCountAndCalc',
+                name: 'CountersAndPrices',
                 link: 'counters-drink-prices',
                 icon: subcategoriesIcons.grocery,
             },
-        ]
+        ],
     },
     {
         name: 'Settings',
@@ -126,5 +126,5 @@ export const adminCategories: Category[] = [
                 icon: subcategoriesIcons.mailbox,
             },
         ],
-    }
+    },
 ];

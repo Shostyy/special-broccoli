@@ -4,6 +4,7 @@ import { ExtendedUpdateSliceState } from '../shared/types/extendedUpdateSliceSta
 import { createExtendedUpdateState } from '../shared/utils/createExtendedUpdateState';
 import { ProductPrice } from '../../api/types/productPrice';
 import { TradePointData } from '../../api/types/tradePointData';
+import { UNAUTHORIZED_STATUS_CODE } from '../../data/constants/constants';
 
 export interface ProductPricesState extends ExtendedUpdateSliceState {
     productPrices: ProductPrice[] | null;
@@ -19,20 +20,24 @@ export const fetchProductPricesAsync = createAsyncThunk(
     'productPrices/fetchProductPrices',
     async (tradePointId: number, { rejectWithValue }) => {
         try {
-            const response = await productPricesApi.getAllProductPricesByTradePointId(tradePointId);
+            const response = await productPricesApi
+                .getProductPricesByTradePointId(tradePointId);
             return response;
         } catch (error: any) {
-            if (error.response.status === 401) {
+            if (error.response.status === UNAUTHORIZED_STATUS_CODE) {
                 window.location.reload();
             }
             return rejectWithValue(error.message || 'Failed to fetch product prices');
         }
-    }
+    },
 );
 
 export const updateProductPrices = (tradePointId: number) => {
     return (dispatch: any) => {
-        productPricesApi.subscribeForUpdateProductPrices(dispatch, tradePointId);
+        productPricesApi.subscribeForUpdateProductPrices(
+            dispatch, 
+            tradePointId,
+        );
     };
 };
 
@@ -60,8 +65,8 @@ const productPricesSlice = createSlice({
             state.selectedTradePoint = action.payload;
         },
         resetStateCompletely: (state) => {
-            state = initialState;
-        }
+            Object.assign(state, initialState);
+        },
     },
     extraReducers: (builder) => {
         builder
@@ -78,9 +83,16 @@ const productPricesSlice = createSlice({
                 state.loading = false;
                 state.errorTranslationKey = action.error.message || 'Failed to fetch product prices';
             })
-    }
+    },
 });
 
-export const { resetState, updatePending, updateFulfilled, updateRejected, setSelectedTradePoint, resetStateCompletely } = productPricesSlice.actions;
+export const {
+    resetState,
+    updatePending,
+    updateFulfilled,
+    updateRejected,
+    setSelectedTradePoint,
+    resetStateCompletely,
+} = productPricesSlice.actions;
 
 export default productPricesSlice.reducer;

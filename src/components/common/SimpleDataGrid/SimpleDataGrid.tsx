@@ -14,7 +14,7 @@ const SimpleDataGrid: React.FC<SimpleTableProps> = ({
     columns, 
     rows, 
     enableFiltering = true, 
-    enableFooter = false 
+    enableFooter = false, 
 }) => {
     const { i18n } = useTranslation();
 

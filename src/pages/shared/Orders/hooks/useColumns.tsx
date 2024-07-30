@@ -9,42 +9,62 @@ import EditIcon from '@mui/icons-material/Edit';
 import UpdateIcon from '@mui/icons-material/Update';
 import DeleteIcon from '@mui/icons-material/Delete';
 import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
-import { customDateFilter, customTradePointFilter, customStatusFilter, customSumFilter } from '../utils';
 import { customTextFieldStyle } from '../styles/customTextFieldStyle';
 import { customDatePickerStyles } from '../styles/customDatePickerStyles';
 import { OrderData } from '../../../../api/types/orderData';
 import { TradePointData } from '../../../../api/types/tradePointData';
+import { ADMIN_ROLE, ORDERS_MAX_COMMENT_LENGTH, SPLIT_START, STATUS_STEPS } from '../../../../data/constants/constants';
+import { UserInfo } from '../../../../api/types/userInfo';
 
 export const useColumns = ({
     handleCopyOrder,
     handleChangeOrder,
     handleUpdateStatus,
     handleDeleteOrder,
+    filters,
+    handleFilterChange,
+    userInfo,
 }: {
     handleCopyOrder: (order: OrderData) => void;
     handleChangeOrder: (order: OrderData) => void;
     handleUpdateStatus: (order: OrderData) => void;
     handleDeleteOrder: (order: OrderData) => void;
+    filters: any;
+    handleFilterChange: (key: string, value: any) => void;
+    userInfo?: UserInfo | null;
 }) => {
     const { t } = useTranslation();
+    const role = userInfo?.role.name;
 
     return useMemo<MRT_ColumnDef<OrderData, keyof OrderData>[]>(() => [
+        {
+            accessorKey: 'id',
+            header: 'ID',
+            Filter: () => (
+                <TextField
+                    placeholder={t('FilterByID')}
+                    value={filters.id}
+                    variant='standard'
+                    onChange={(e) => handleFilterChange('id', e.target.value)}
+                    sx={{ width: '130px', ...customTextFieldStyle }}
+                />
+            ),
+        },
         {
             accessorKey: 'docNumber',
             header: t('DocNum'),
             Cell: ({ cell }) => cell.row.original.docNumber || '-',
-            minSize: 40,
+            minSize: 20,
             size: 40,
             maxSize: 40,
-            filterFn: 'includesString',
             grow: false,
-            Filter: ({ column }) => (
+            Filter: () => (
                 <TextField
-                    placeholder={`${t('FilterBy')} ${t('DocNum')}`}
-                    value={column.getFilterValue() || ''}
+                    placeholder={t('FilterByDocNumber')}
+                    value={filters.docNumber}
                     variant='standard'
-                    onChange={(e) => column.setFilterValue(e.target.value)}
-                    sx={{ width: '180px', ...customTextFieldStyle }}
+                    onChange={(e) => handleFilterChange('docNumber', e.target.value)}
+                    sx={{ width: '240px', ...customTextFieldStyle }}
                 />
             ),
         },
@@ -54,24 +74,28 @@ export const useColumns = ({
             Cell: ({ cell }) => {
                 const tradePointName = cell.getValue<TradePointData>().name;
                 return (
-                    <div style={{ width: '200px' }}>
-                        {tradePointName.length > 30 ? (
-                            <Tooltip title={tradePointName}>
-                                <span>{`${tradePointName.substring(0, 30)}...`}</span>
-                            </Tooltip>
-                        ) : (
-                            <>{tradePointName}</>
-                        )}
-                    </div>
+                    <Tooltip title={`${t('ShowOrdersByTradePoint')} ${tradePointName}`}>
+                        <div style={{ width: '200px' }} onClick={(event) => {
+                            event.stopPropagation();
+                            handleFilterChange('tradePoint', tradePointName);
+                        }}>
+                            {tradePointName.length > 30 ? (
+                                <Tooltip title={tradePointName}>
+                                    <span>{`${tradePointName.substring(0, 30)}...`}</span>
+                                </Tooltip>
+                            ) : (
+                                <>{tradePointName}</>
+                            )}
+                        </div>
+                    </Tooltip>
                 );
             },
-            filterFn: customTradePointFilter,
-            Filter: ({ column }) => (
+            Filter: () => (
                 <TextField
-                    placeholder={`${t('FilterBy')} ${t('TradePoint')}`}
-                    value={column.getFilterValue() || ''}
+                    placeholder={t('FilterByTradePoint')}
+                    value={filters.tradePoint}
                     variant='standard'
-                    onChange={(e) => column.setFilterValue(e.target.value)}
+                    onChange={(e) => handleFilterChange('tradePoint', e.target.value)}
                     sx={{ width: '100%', ...customTextFieldStyle }}
                 />
             ),
@@ -80,31 +104,29 @@ export const useColumns = ({
             accessorKey: 'dateCreated',
             header: t('CreationDate'),
             size: 40,
-            filterFn: customDateFilter,
             Cell: ({ cell }) => format(parseISO(cell.getValue<string>()), 'dd/MM/yy HH:mm'),
-            Filter: ({ column }) => (
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', width: '150px' }}>
+            Filter: () => (
+                <div style={{ display: 'flex', flexDirection: 'row', gap: '0.5rem', width: '220px' }}>
                     <DatePicker
-                        onChange={(newValue) =>
-                            column.setFilterValue((old: [Date | null, Date | null]) => [
-                                newValue,
-                                old?.[1],
-                            ])
-                        }
+                        value={filters.dateCreatedStart}
+                        onChange={(newValue) => handleFilterChange('dateCreatedStart', newValue)}
                         label={t('StartDate')}
+                        views={['year', 'month', 'day']}
                         sx={{
+                            width: '110px',
                             ...customDatePickerStyles,
+                            borderColor: 'rgba(0, 0, 0, 0.23)',
                         }}
                     />
                     <DatePicker
-                        onChange={(newValue) =>
-                            column.setFilterValue((old: [Date | null, Date | null]) => [
-                                old?.[0],
-                                newValue,
-                            ])
-                        }
+                        value={filters.dateCreatedEnd}
+                        onChange={(newValue) => handleFilterChange('dateCreatedEnd', newValue)}
                         label={t('EndDate')}
-                        sx={{ ...customDatePickerStyles }}
+                        views={['year', 'month', 'day']}
+                        sx={{
+                            width: '110px',
+                            ...customDatePickerStyles,
+                        }}
                     />
                 </div>
             ),
@@ -115,38 +137,28 @@ export const useColumns = ({
             minSize: 20,
             size: 40,
             Cell: ({ cell }) => cell.row.original.sum.toFixed(2),
-            filterFn: customSumFilter,
-            Filter: ({ column }) => (
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', width: '150px' }}>
+            Filter: () => (
+                <div style={{ display: 'flex', flexDirection: 'row', gap: '0.5rem', width: '150px' }}>
                     <TextField
                         placeholder={t('Min')}
-                        type="text"
+                        type="number"
                         variant='standard'
-                        onChange={(e) =>
-                            column.setFilterValue((old: [number | undefined, number | undefined]) => [
-                                e.target.value ? Number(e.target.value) : undefined,
-                                old?.[1],
-                            ])
-                        }
+                        value={filters.sumMin}
+                        onChange={(e) => handleFilterChange('sumMin', e.target.value)}
                         sx={{
                             width: '100px',
-                            ...customTextFieldStyle
+                            ...customTextFieldStyle,
                         }}
                     />
                     <TextField
                         placeholder={t('Max')}
-                        type="text"
-                        onChange={(e) =>
-                            column.setFilterValue((old: [number | undefined, number | undefined]) => [
-                                old?.[0],
-                                e.target.value ? Number(e.target.value) : undefined,
-                            ])
-                        }
+                        type="number"
+                        value={filters.sumMax}
+                        onChange={(e) => handleFilterChange('sumMax', e.target.value)}
                         variant='standard'
                         sx={{
                             width: '100px',
-                            ...customTextFieldStyle
-
+                            ...customTextFieldStyle,
                         }}
                     />
                 </div>
@@ -158,19 +170,18 @@ export const useColumns = ({
             size: 40,
             maxSize: 40,
             Cell: ({ cell }) => t(cell.row.original.status),
-            filterFn: customStatusFilter,
-            Filter: ({ column }) => (
+            Filter: () => (
                 <TextField
                     select
-                    value={column.getFilterValue() || ''}
-                    onChange={(e) => column.setFilterValue(e.target.value)}
+                    value={filters.status}
+                    onChange={(e) => handleFilterChange('status', e.target.value)}
                     variant='standard'
                     sx={{ width: '100px', ...customTextFieldStyle }}
                 >
                     <MenuItem value="" key="select-all">
                         {t('SelectAll')}
                     </MenuItem>
-                    {['DRAFT', 'DELIVERY', 'ACCEPTED', 'DONE'].map((status) => (
+                    {STATUS_STEPS.map((status) => (
                         <MenuItem key={status} value={status}>
                             {t(status)}
                         </MenuItem>
@@ -185,10 +196,10 @@ export const useColumns = ({
             Cell: ({ cell }) => {
                 const comment = cell.row.original.comment || '-';
                 return (
-                    <div style={{ height: '2rem', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                        {comment.length > 40 ? (
+                    <div style={{ height: '2rem', display: 'flex', alignItems: 'center', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                        {comment.length > ORDERS_MAX_COMMENT_LENGTH ? (
                             <Tooltip title={comment}>
-                                <span>{`${comment.substring(0, 40)}...`}</span>
+                                <span>{`${comment.substring(SPLIT_START, ORDERS_MAX_COMMENT_LENGTH)}...`}</span>
                             </Tooltip>
                         ) : (
                             <span>{comment}</span>
@@ -196,13 +207,12 @@ export const useColumns = ({
                     </div>
                 );
             },
-            filterFn: 'includesString',
-            Filter: ({ column }) => (
+            Filter: () => (
                 <TextField
-                    placeholder={`${t('FilterBy')} ${t('Comment')}`}
-                    value={column.getFilterValue() || ''}
+                    placeholder={t('FilterByComment')}
+                    value={filters.comment}
                     variant='standard'
-                    onChange={(e) => column.setFilterValue(e.target.value)}
+                    onChange={(e) => handleFilterChange('comment', e.target.value)}
                     sx={{ width: '200px', ...customTextFieldStyle }}
                 />
             ),
@@ -223,70 +233,113 @@ export const useColumns = ({
                     event.stopPropagation();
                 };
 
+                const status = row.original.status;
+
+
                 return (
                     <div className="flex space-x-2">
-                        {openOptions ? (
-                            <>
-                                <button
-                                    onClick={(event) => {
-                                        stopPropagation(event);
-                                        handleCopyOrder(row.original);
-                                        setOpenOptions(false);
-                                    }}
-                                    className="text-gray-500 p-1 rounded"
-                                    title={t('CopyOrder')}
-                                >
-                                    <ContentCopyIcon />
+                        {role === ADMIN_ROLE ? (
+                            status === 'DRAFT' ? (
+                                <button className="text-gray-500 p-1 rounded" title={t('NoAction')}>
+                                    -
                                 </button>
-                                <button
-                                    onClick={(event) => {
-                                        stopPropagation(event);
-                                        handleChangeOrder(row.original);
-                                        setOpenOptions(false);
-                                    }}
-                                    className="text-gray-500 p-1 rounded"
-                                    title={t('ChangeOrder')}
-                                >
-                                    <EditIcon />
-                                </button>
+                            ) : (
                                 <button
                                     onClick={(event) => {
                                         stopPropagation(event);
                                         handleUpdateStatus(row.original);
-                                        setOpenOptions(false);
                                     }}
                                     className="text-gray-500 p-1 rounded"
-                                    title={t('UpdateStatus')}
+                                    title={t('UpdateOrderStatus')}
                                 >
                                     <UpdateIcon />
                                 </button>
-                                <button
-                                    onClick={(event) => {
-                                        stopPropagation(event);
-                                        handleDeleteOrder(row.original);
-                                        setOpenOptions(false);
-                                    }}
-                                    className="text-gray-500 p-1 rounded"
-                                    title={t('DeleteOrder')}
-                                >
-                                    <DeleteIcon />
-                                </button>
-                            </>
+                            )
                         ) : (
-                            <button
-                                onClick={(event) => {
-                                    stopPropagation(event);
-                                    handleOpenOptions();
-                                }}
-                                className="text-gray-500 p-1 rounded"
-                                title={t('Options')}
-                            >
-                                <MoreHorizIcon />
-                            </button>
+                            <>
+                                {openOptions ? (
+                                    <>
+                                        {status === 'DRAFT' && (
+                                            <>
+                                                <button
+                                                    onClick={(event) => {
+                                                        stopPropagation(event);
+                                                        handleChangeOrder(row.original);
+                                                        setOpenOptions(false);
+                                                    }}
+                                                    className="text-gray-500 p-1 rounded"
+                                                    title={t('EditOrder')}
+                                                >
+                                                    <EditIcon />
+                                                </button>
+                                                <button
+                                                    onClick={(event) => {
+                                                        stopPropagation(event);
+                                                        handleDeleteOrder(row.original);
+                                                        setOpenOptions(false);
+                                                    }}
+                                                    className="text-gray-500 p-1 rounded"
+                                                    title={t('DeleteOrder')}
+                                                >
+                                                    <DeleteIcon />
+                                                </button>
+                                                <button
+                                                    onClick={(event) => {
+                                                        stopPropagation(event);
+                                                        handleCopyOrder(row.original);
+                                                        setOpenOptions(false);
+                                                    }}
+                                                    className="text-gray-500 p-1 rounded"
+                                                    title={t('CopyOrder')}
+                                                >
+                                                    <ContentCopyIcon />
+                                                </button>
+                                            </>
+                                        )}
+                                        {(status === 'ACCEPTED' || status === 'DELIVERY' || status === 'CANCELLED' || status === 'DONE') && (
+                                            <>
+                                                <button
+                                                    onClick={(event) => {
+                                                        stopPropagation(event);
+                                                        handleUpdateStatus(row.original);
+                                                        setOpenOptions(false);
+                                                    }}
+                                                    className="text-gray-500 p-1 rounded"
+                                                    title={t('UpdateOrderStatus')}
+                                                >
+                                                    <UpdateIcon />
+                                                </button>
+                                                <button
+                                                    onClick={(event) => {
+                                                        stopPropagation(event);
+                                                        handleCopyOrder(row.original);
+                                                        setOpenOptions(false);
+                                                    }}
+                                                    className="text-gray-500 p-1 rounded"
+                                                    title={t('CopyOrder')}
+                                                >
+                                                    <ContentCopyIcon />
+                                                </button>
+                                            </>
+                                        )}
+                                    </>
+                                ) : (
+                                    <button
+                                        onClick={(event) => {
+                                            stopPropagation(event);
+                                            handleOpenOptions();
+                                        }}
+                                        className="text-gray-500 p-1 rounded"
+                                        title={t('Options')}
+                                    >
+                                        <MoreHorizIcon />
+                                    </button>
+                                )}
+                            </>
                         )}
                     </div>
                 );
-            },
-        },
-    ], [handleCopyOrder, handleChangeOrder, handleUpdateStatus, handleDeleteOrder, t]);
+            }
+        }
+    ], [t, filters, handleFilterChange, handleCopyOrder, handleChangeOrder, handleUpdateStatus, handleDeleteOrder]);
 };

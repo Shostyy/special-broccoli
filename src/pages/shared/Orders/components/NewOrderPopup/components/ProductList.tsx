@@ -24,9 +24,11 @@ const ProductList: React.FC<ProductListProps> = ({
     handleProductRemove,
     setSelectedProducts,
     filteredProducts,
-    displayType
+    displayType,
 }) => {
     const { t } = useTranslation();
+
+    const totalSum = selectedProducts.reduce((sum, product) => sum + product.price * product.quantity, 0).toFixed(1);
 
     const renderFullTable = () => (
         <Table sx={{ padding: '20px', marginTop: '20px' }}>
@@ -75,7 +77,7 @@ const ProductList: React.FC<ProductListProps> = ({
                                                         e.stopPropagation();
                                                         const value = parseInt(e.target.value, 10);
                                                         setSelectedProducts(prevSelected => prevSelected.map(p =>
-                                                            p.productId === product.productId ? { ...p, quantity: value } : p
+                                                            p.productId === product.productId ? { ...p, quantity: value } : p,
                                                         ));
                                                     }}
                                                     min={1}
@@ -104,59 +106,68 @@ const ProductList: React.FC<ProductListProps> = ({
         </Table>
     );
 
-    const renderSelectedTable = () => (
-        <Table sx={{ padding: '20px', marginTop: '20px' }}>
-            <TableHead>
-                <TableRow sx={{ bgcolor: '#d9d9d9' }}>
-                    <TableCell align="left">{t('ID')}</TableCell>
-                    <TableCell align="left">{t('Name')}</TableCell>
-                    <TableCell align="left">{t('PriceUAH')}</TableCell>
-                    <TableCell align="left">{t('Unit')}</TableCell>
-                    <TableCell align="left">{t('Quantity')}</TableCell>
-                    <TableCell align="left">{t('Total')}</TableCell>
-                    <TableCell align="left"></TableCell>
-                </TableRow>
-            </TableHead>
-            <TableBody>
-                {selectedProducts.map(product => (
-                    <TableRow key={product.productId}>
-                        <TableCell align="left">{product.productId}</TableCell>
-                        <TableCell align="left">{product.productName}</TableCell>
-                        <TableCell align="left">{product.price} ₴</TableCell>
-                        <TableCell align="left">{product.unit}</TableCell>
-                        <TableCell align="left">
-                            <div className={styles.quantityButtons}>
-                                <button className={styles.quantityButton} onClick={() => handleProductRemove(product)}>-</button>
-                                <input
-                                    type="string"
-                                    className={styles.quantityInput}
-                                    value={product.quantity}
-                                    onChange={(e) => {
-                                        const value = parseInt(e.target.value, 10);
-                                        setSelectedProducts(selectedProducts.map(p =>
-                                            p.productId === product.productId ? { ...p, quantity: value } : p
-                                        ));
-                                    }}
-                                    min={1}
-                                />
-                                <button className={styles.quantityButton} onClick={() => handleProductSelect(product)}>+</button>
-                            </div>
-                        </TableCell>
-                        <TableCell align="left">{(product.price * product.quantity).toFixed(1)}₴</TableCell>
-                        <TableCell align="left">
-                            <button className={styles.removeButton} onClick={() => handleProductRemove(product)}>
-                                <CloseIcon sx={{ fontSize: '18px' }} />
-                            </button>
-                        </TableCell>
-                    </TableRow>
-                ))}
-            </TableBody>
-        </Table>
-    );
-
     return (
         <div className={styles.productList}>
-            {displayType === 'full' ? renderFullTable() : renderSelectedTable()}
+            {displayType === 'full' ? renderFullTable() : (
+                <Table sx={{ padding: '20px', marginTop: '20px' }}>
+                    <TableHead>
+                        <TableRow sx={{ bgcolor: '#d9d9d9' }}>
+                            <TableCell align="left">{t('ID')}</TableCell>
+                            <TableCell align="left">{t('Name')}</TableCell>
+                            <TableCell align="left">{t('PriceUAH')}</TableCell>
+                            <TableCell align="left">{t('Unit')}</TableCell>
+                            <TableCell align="left">{t('Quantity')}</TableCell>
+                            <TableCell align="left">{t('Total')}</TableCell>
+                            <TableCell align="left"></TableCell>
+                        </TableRow>
+                    </TableHead>
+                    <TableBody>
+                        {selectedProducts.map(product => (
+                            <TableRow key={product.productId}>
+                                <TableCell align="left">{product.productId}</TableCell>
+                                <TableCell align="left">{product.productName}</TableCell>
+                                <TableCell align="left">{product.price} ₴</TableCell>
+                                <TableCell align="left">{product.unit}</TableCell>
+                                <TableCell align="left">
+                                    <div className={styles.quantityButtons}>
+                                        <button className={styles.quantityButton} onClick={() => handleProductRemove(product)}>-</button>
+                                        <input
+                                            type="string"
+                                            className={styles.quantityInput}
+                                            value={product.quantity}
+                                            onChange={(e) => {
+                                                const value = parseInt(e.target.value, 10);
+                                                setSelectedProducts(selectedProducts.map(p =>
+                                                    p.productId === product.productId ? { ...p, quantity: value } : p,
+                                                ));
+                                            }}
+                                            min={1}
+                                        />
+                                        <button className={styles.quantityButton} onClick={() => handleProductSelect(product)}>+</button>
+                                    </div>
+                                </TableCell>
+                                <TableCell align="left">{(product.price * product.quantity).toFixed(1)}₴</TableCell>
+                                <TableCell align="left">
+                                    <button className={styles.removeButton} onClick={() => handleProductRemove(product)}>
+                                        <CloseIcon sx={{ fontSize: '18px' }} />
+                                    </button>
+                                </TableCell>
+                            </TableRow>
+                        ))}
+                        <TableRow>
+                            <TableCell align="left" style={{fontWeight: '700'}}>{t('Sum')}</TableCell>
+                            <TableCell align="left"></TableCell>
+                            <TableCell align="left"></TableCell>
+                            <TableCell align="left"></TableCell>
+                            <TableCell align="left">
+                            </TableCell>
+                            <TableCell align="left" style={{fontWeight: '700'}}>{totalSum} ₴</TableCell>
+                            <TableCell align="left">
+                            </TableCell>
+                        </TableRow>
+                    </TableBody>
+                </Table>
+            )}
         </div>
     );
 }

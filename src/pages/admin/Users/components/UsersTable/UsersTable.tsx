@@ -15,7 +15,7 @@ import BlockIcon from '@mui/icons-material/Block';
 import { ConfirmationModal } from '../ConfirmationModal';
 import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline';
 import HighlightOffIcon from '@mui/icons-material/HighlightOff';
-import { ADMIN_ROLE } from '../../../../../data/constants/constants';
+import { ADMIN_ROLE, UNAUTHORIZED_STATUS_CODE } from '../../../../../data/constants/constants';
 
 const UsersTable: React.FC = () => {
     const dispatch = useAppDispatch();
@@ -38,7 +38,7 @@ const UsersTable: React.FC = () => {
 
         Promise.all([
             dispatch(fetchUsersAsync()),
-            dispatch(fetchAllRoles())
+            dispatch(fetchAllRoles()),
         ]).then(() => {
             setLoading(false); // Stop loading when data fetching is done
         }).catch((err) => {
@@ -55,9 +55,10 @@ const UsersTable: React.FC = () => {
         let filtered = users;
 
         if (searchTerm) {
+            const fixedText = searchTerm.toLowerCase();
             filtered = filtered ? filtered.filter(user =>
-                user.email.toLowerCase().includes(searchTerm) ||
-                user.login.toLowerCase().includes(searchTerm)
+                user.email.toLowerCase().includes(fixedText) ||
+                user.login.toLowerCase().includes(fixedText),
             ) : [];
         }
 
@@ -71,8 +72,9 @@ const UsersTable: React.FC = () => {
                     dispatch(fetchUsersAsync());
                 })
                 .catch((err) => {
-                    console.log(err);
-                    console.log(err.status);
+                    if (err.status === UNAUTHORIZED_STATUS_CODE) {
+                        window.location.reload();
+                    }
                 })
                 .finally(() => {
                     setEditingUserId(null);
@@ -202,7 +204,7 @@ const UsersTable: React.FC = () => {
                             width: '20px',
                             height: '20px',
                             borderRadius: '50%',
-                            backgroundColor: `${row.original.role && row.original.role.name === ADMIN_ROLE ? '#3C3E6B' : '#DAE1EC'}`
+                            backgroundColor: `${row.original.role && row.original.role.name === ADMIN_ROLE ? '#3C3E6B' : '#DAE1EC'}`,
                         }}></div><span>{row.original.role ? t(row.original.role.name) : '-'}</span>
                     </div>
                 )
@@ -232,7 +234,7 @@ const UsersTable: React.FC = () => {
                                     borderRadius: '5px',
                                     padding: '3px',
                                     width: '80px',
-                                    color: '#C25458'
+                                    color: '#C25458',
                                 }}
                             >
                                 <CheckCircleOutlineIcon htmlColor='#C25458' />
@@ -248,7 +250,7 @@ const UsersTable: React.FC = () => {
                                     borderRadius: '5px',
                                     padding: '3px',
                                     width: '80px',
-                                    color: '#000'
+                                    color: '#000',
                                 }}
                             >
                                 <HighlightOffIcon />
@@ -267,7 +269,7 @@ const UsersTable: React.FC = () => {
                                     </button>
                                     <button
                                         onClick={() => handleToggleUserBlock(row.original)}
-                                        className={`text-gray-500 p-1 rounded`}
+                                        className={'text-gray-500 p-1 rounded'}
                                     >
                                         {<BlockIcon titleAccess={row.original.blocked ? t('Unblock') : t('Block')} />}
                                     </button>
@@ -328,13 +330,13 @@ const UsersTable: React.FC = () => {
                         localization={currentTableLocale}
                         enablePagination={true}
                         initialState={{
-                            pagination: { pageSize: 8, pageIndex: 0 }
+                            pagination: { pageSize: 8, pageIndex: 0 },
                         }}
                         paginationDisplayMode='pages'
                         muiPaginationProps={{
                             showRowsPerPage: false,
-                            shape: "rounded",
-                            variant: "outlined",
+                            shape: 'rounded',
+                            variant: 'outlined',
                             showFirstButton: false,
                             showLastButton: false,
                         }}

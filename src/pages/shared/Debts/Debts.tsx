@@ -3,12 +3,9 @@ import { useAppDispatch, useAppSelector } from '../../../types/hooks';
 import { fetchAllDebtsAsync, updateDebts } from '../../../redux/slices/debtsSlice';
 import { fetchTradePointAsync } from '../../../redux/slices/tradePointsSlice';
 import { fetchCustomersAsync } from '../../../redux/slices/customersSlice';
-import { GeneralButton, SimpleTable, TradePointSelect, UpdateButton } from '../../../components/common';
-import { TradePointData } from '../../../api/types/tradePointData';
-import { Alert, Box, LinearProgress, Stack } from '@mui/material';
+import { GeneralButton, SimpleTable, UpdateButton } from '../../../components/common';
+import { Alert, Box, LinearProgress, Stack, TextField, Tooltip } from '@mui/material';
 import { useTranslation } from 'react-i18next';
-import { CustomerData } from '../../../api/types/customerData';
-import CustomerSelect from '../../../components/common/Selects/CustomerSelect';
 import { MRT_ColumnDef } from 'material-react-table';
 import { DebtData } from '../../../api/types/debtData';
 import ordersApi from '../../../api/methods/ordersApi';
@@ -16,20 +13,28 @@ import { appIcons } from '../../../data/constants/icons';
 import { fetchClientFullResponse } from '../../../api/fetchClientFullResponse';
 import { CustomerInfo } from '../../../api/types/customerInfo';
 import { BASE_URL } from '../../../data/constants/constants';
-import CustomerInfoSelect from '../../../components/common/Selects/CustomerInfoSelect';
+import { customTextFieldStyle } from '../Orders/styles/customTextFieldStyle';
 
 const Debts: React.FC = () => {
     const dispatch = useAppDispatch();
-    const { t, i18n } = useTranslation();
-    const tradePoints = useAppSelector(state => state.tradePoints.tradePoints);
-    const customers = useAppSelector(state => state.customers.customers);
-    const [selectedTradePoint, setSelectedTradePoint] = useState<TradePointData | null>(null);
-    const [selectedCustomer, setSelectedCustomer] = useState<CustomerData | CustomerInfo | null>(null);
+    const { t } = useTranslation();
     const { debts, updateStatus } = useAppSelector(state => state.debts);
-    const [tradePointsForDebts, setTradePointsForDebts] = useState<TradePointData[] | null>(null);
-    const [customersForDebts, setCustomersForDebts] = useState<CustomerInfo[] | null>(null)
-    const [errorMessage, setErrorMessage] = useState<string | null>(null);
     const user = useAppSelector(state => state.login.userInfo);
+    const [errorMessage, setErrorMessage] = useState<string | null>(null);
+    const [filteredDebts, setFilteredDebts] = useState<DebtData[]>([]);
+    const [filters, setFilters] = useState({
+        customerName: '',
+        tradePointName: '',
+        docNumber: '',
+        sumMin: '',
+        sumMax: ''
+    });
+    const [customerNames, setCustomerNames] = useState<string[]>([]);
+    const [tradePointNames, setTradePointNames] = useState<string[]>([]);
+
+    const handleFilterChange = (key: string, value: string) => {
+        setFilters(prev => ({ ...prev, [key]: value }));
+    };
 
     useEffect(() => {
         fetchClientFullResponse.get<CustomerInfo[]>(`${BASE_URL}/api/users/user-customers`)
@@ -37,8 +42,6 @@ const Debts: React.FC = () => {
                 const onlyCurrentUserCustomer = res.data.filter(customer => customer.userId === user?.id);
 
                 if (onlyCurrentUserCustomer.length > 0) {
-                    setCustomersForDebts(onlyCurrentUserCustomer);
-
                     ordersApi.getTradePointForOrders()
                         .then(res => {
                             if (res.length === 0) {
@@ -47,8 +50,6 @@ const Debts: React.FC = () => {
                                 } else {
                                     setErrorMessage(t('NoRelationshipError'));
                                 }
-                            } else {
-                                setTradePointsForDebts(res);
                             }
                         })
                         .catch(err => console.log(err));
@@ -64,40 +65,52 @@ const Debts: React.FC = () => {
         dispatch(fetchAllDebtsAsync({}));
     }, [dispatch, t, user]);
 
-    const handleSelectTradePoint = (tradePoint: TradePointData | null) => {
-        if (tradePoint) {
-            setSelectedTradePoint(tradePoint);
-            setSelectedCustomer(null);
-            dispatch(fetchAllDebtsAsync({ tradePointId: tradePoint.id }));
-        } else {
-            setSelectedTradePoint(null);
-            dispatch(fetchAllDebtsAsync({}));
-        }
-    };
+    useEffect(() => {
+        if (debts) {
+            const uniqueCustomerNames = Array.from(new Set(debts.map(debt => debt.customerName)));
+            const uniqueTradePointNames = Array.from(new Set(debts.map(debt => debt.tradePointName)));
+            setCustomerNames(uniqueCustomerNames);
+            setTradePointNames(uniqueTradePointNames);
 
-    const handleSelectCustomer = (customer: CustomerData | CustomerInfo | null) => {
-        if (customer) {
-            setSelectedCustomer(customer);
-            setSelectedTradePoint(null);
-
-            const customerId = 'id' in customer ? customer.id : customer.customerId;
-            dispatch(fetchAllDebtsAsync({ customerId }));
-        } else {
-            setSelectedCustomer(null);
-            dispatch(fetchAllDebtsAsync({}));
+            let filtered = debts;
+            if (filters.customerName) {
+                filtered = filtered.filter(debt => debt.customerName?.toLowerCase().includes(filters.customerName.toLowerCase()));
+            }
+            if (filters.tradePointName) {
+                filtered = filtered.filter(debt => debt.tradePointName?.toLowerCase().includes(filters.tradePointName.toLowerCase()));
+            }
+            if (filters.docNumber) {
+                filtered = filtered.filter(debt => debt.docNumber?.toLowerCase().includes(filters.docNumber.toLowerCase()));
+            }
+            if (filters.sumMin) {
+                filtered = filtered.filter(debt => debt.sum >= Number(filters.sumMin));
+            }
+            if (filters.sumMax) {
+                filtered = filtered.filter(debt => debt.sum <= Number(filters.sumMax));
+            }
+            setFilteredDebts(filtered);
         }
-    };
+    }, [debts, filters]);
 
     const handleUpdate = () => {
         dispatch(updateDebts());
     };
 
     const totalDebt = useMemo(() => {
-        return debts?.reduce((acc, debt) => acc + debt.sum, 0).toFixed(2);
-    }, [debts, selectedTradePoint, selectedCustomer]);
+        return filteredDebts.reduce((acc, debt) => acc + debt.sum, 0).toFixed(2);
+    }, [filteredDebts]);
 
     const handleResetFilters = () => {
-        dispatch(fetchAllDebtsAsync({}));
+        setFilters({
+            customerName: '',
+            tradePointName: '',
+            docNumber: '',
+            sumMin: '',
+            sumMax: ''
+        });
+        if (debts) {
+            setFilteredDebts(debts);
+        }
     };
 
     const columns = useMemo<MRT_ColumnDef<DebtData, keyof DebtData>[]>(() => [
@@ -108,31 +121,20 @@ const Debts: React.FC = () => {
             maxSize: 200,
             size: 200,
             Filter: () => (
-                <div style={{ width: '320px', height: '32px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                    {customersForDebts && customersForDebts.length > 0 && (
-                        <CustomerInfoSelect
-                            customersList={customersForDebts}
-                            onSelect={handleSelectCustomer}
-                            color='white'
-                            width={320}
-                            height={32}
-                        />
-                    )}
-                    {customers && customers.length > 0 && !customersForDebts && (
-                        <CustomerSelect
-                            customersList={customers}
-                            onSelect={handleSelectCustomer}
-                            color='white'
-                            width={320}
-                            height={32}
-                        />
-                    )}
-                </div>
+                <TextField
+                    placeholder={t('FilterByCustomer')}
+                    value={filters.customerName}
+                    variant='standard'
+                    onChange={(e) => handleFilterChange('customerName', e.target.value)}
+                    sx={{ width: '240px', ...customTextFieldStyle }}
+                />
             ),
-            Cell: ({ cell }) => (
-                <div style={{ width: '320px', height: '32px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                    {cell.getValue() as string}
-                </div>
+            Cell: ({ row }) => (
+                <Tooltip title={`${t('ShowDebtsByCustomer')} ${row.original.customerName}`}>
+                    <div style={{ width: '200px', cursor: 'pointer' }} onClick={() => handleFilterChange('customerName', row.original.customerName)}>
+                        <>{row.original.customerName}</>
+                    </div>
+                </Tooltip>
             ),
             Footer: () => <div style={{ fontSize: '15px' }}>{t('DebtRes')}</div>,
         },
@@ -143,26 +145,20 @@ const Debts: React.FC = () => {
             maxSize: 400,
             size: 400,
             Filter: () => (
-                <>
-                    {tradePointsForDebts && tradePointsForDebts.length > 0 && (
-                        <TradePointSelect
-                            tradePointsList={tradePointsForDebts}
-                            onSelect={handleSelectTradePoint}
-                            color='white'
-                            width={320}
-                            height={32}
-                        />
-                    )}
-                    {tradePoints && tradePoints.length > 0 && !tradePointsForDebts && (
-                        <TradePointSelect
-                            tradePointsList={tradePoints}
-                            onSelect={handleSelectTradePoint}
-                            color='white'
-                            width={320}
-                            height={32}
-                        />
-                    )}
-                </>
+                <TextField
+                    placeholder={t('FilterByTradePoint')}
+                    value={filters.tradePointName}
+                    variant='standard'
+                    onChange={(e) => handleFilterChange('tradePointName', e.target.value)}
+                    sx={{ width: '240px', ...customTextFieldStyle }}
+                />
+            ),
+            Cell: ({ row }) => (
+                <Tooltip title={`${t('ShowDebtsByTradePoint')} ${row.original.customerName}`}>
+                    <div style={{ width: '200px', cursor: 'pointer' }} onClick={() => handleFilterChange('tradePointName', row.original.tradePointName)}>
+                        <>{row.original.tradePointName}</>
+                    </div>
+                </Tooltip>
             ),
         },
         {
@@ -171,7 +167,15 @@ const Debts: React.FC = () => {
             minSize: 200,
             maxSize: 200,
             size: 200,
-            grow: 0,
+            Filter: () => (
+                <TextField
+                    placeholder={t('FilterByDocNumber')}
+                    value={filters.docNumber}
+                    variant='standard'
+                    onChange={(e) => handleFilterChange('docNumber', e.target.value)}
+                    sx={{ width: '240px', ...customTextFieldStyle }}
+                />
+            ),
         },
         {
             accessorKey: 'sum',
@@ -179,14 +183,30 @@ const Debts: React.FC = () => {
             minSize: 200,
             maxSize: 200,
             size: 200,
-            grow: 0,
-            sortingFn: 'basic',
-            filterVariant: 'range',
-            filterFn: 'between',
-            Cell: ({ cell }) => cell.row.original.sum !== 0 ? cell.row.original.sum : '',
+            Filter: () => (
+                <Box display="flex" gap={1}>
+                    <TextField
+                        placeholder={t('Min')}
+                        value={filters.sumMin}
+                        variant='standard'
+                        type="number"
+                        onChange={(e) => handleFilterChange('sumMin', e.target.value)}
+                        sx={{ width: '120px', ...customTextFieldStyle }}
+                    />
+                    <TextField
+                        placeholder={t('Max')}
+                        value={filters.sumMax}
+                        variant='standard'
+                        type="number"
+                        onChange={(e) => handleFilterChange('sumMax', e.target.value)}
+                        sx={{ width: '120px', ...customTextFieldStyle }}
+                    />
+                </Box>
+            ),
+            Cell: ({ row }) => row.original.sum !== 0 ? row.original.sum.toFixed(2) : '',
             Footer: () => <div style={{ fontSize: '15px' }}>{totalDebt}</div>,
         },
-    ], [t, customers, tradePoints, customersForDebts, tradePointsForDebts, debts, totalDebt]);
+    ], [t, totalDebt, filters, handleFilterChange]);
 
     const emptyResult: DebtData[] = [{
         customerName: t('SearchNotFound'),
@@ -227,10 +247,10 @@ const Debts: React.FC = () => {
                 )}
                 <SimpleTable
                     columns={columns}
-                    rows={debts && debts.length > 0 ? debts : emptyResult}
+                    rows={filteredDebts.length > 0 ? filteredDebts : emptyResult}
                     enableFiltering={true}
                     enableFooter={true}
-                    customRowHeight={49}
+                    customRowHeight={37}
                     customHeaderHeight={176}
                     density='compact'
                 />

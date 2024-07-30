@@ -3,6 +3,7 @@ import { CustomerData } from '../../api/types/customerData';
 import { ExtendedUpdateSliceState } from '../shared/types/extendedUpdateSliceState';
 import customersApi from '../../api/methods/customersApi';
 import { createExtendedUpdateState } from '../shared/utils/createExtendedUpdateState';
+import { UNAUTHORIZED_STATUS_CODE } from '../../data/constants/constants';
 
 export interface CustomersState extends ExtendedUpdateSliceState {
   customers: CustomerData[] | null;
@@ -19,13 +20,13 @@ export const fetchCustomersAsync = createAsyncThunk(
       const response = await customersApi.getAllCustomers();
       return response;
     } catch (error: any) {
-      if (error.status === 401) {
+      if (error.status === UNAUTHORIZED_STATUS_CODE) {
         window.location.reload();
       }
 
       return rejectWithValue(error.message || 'Failed to fetch customers');
     }
-  }
+  },
 );
 
 export const updateCustomers = () => {
@@ -44,18 +45,14 @@ const customersSlice = createSlice({
     },
     updatePending: (state) => {
       state.updateStatus = 'pending';
-      state.loading = true;
-      state.errorTranslationKey = null;
       state.updateMessage = 'CustomersUpdPending';
     },
     updateFulfilled: (state) => {
       state.updateStatus = 'success';
-      state.loading = false;
       state.updateMessage = 'CustomerUpdSuccess';
     },
     updateRejected: (state) => {
       state.updateStatus = 'error';
-      state.loading = false;
       state.updateMessage = 'CustomerErrorMessage';
     },
   },
@@ -76,6 +73,11 @@ const customersSlice = createSlice({
   },
 });
 
-export const { resetState, updatePending, updateFulfilled, updateRejected } = customersSlice.actions;
+export const {
+  resetState,
+  updatePending,
+  updateFulfilled,
+  updateRejected,
+} = customersSlice.actions;
 
 export default customersSlice.reducer;

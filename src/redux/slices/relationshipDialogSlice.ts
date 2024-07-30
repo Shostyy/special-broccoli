@@ -16,7 +16,7 @@ export const fetchUsersForDialogAsync = createAsyncThunk(
   async () => {
     const response = await fetchClient.get<UserDialog[]>(`${BASE_URL}/api/users/user-dialog`);
     return response;
-  }
+  },
 );
 
 export const fetchCustomersForDialogAsync = createAsyncThunk(
@@ -24,7 +24,7 @@ export const fetchCustomersForDialogAsync = createAsyncThunk(
     async () => {
       const response = await fetchClient.get<CustomerData[]>(`${BASE_URL}/api/users/customer-dialog`);
       return response;
-    }
+    },
   );
 
 const initialState: UsersRelationshipState = {

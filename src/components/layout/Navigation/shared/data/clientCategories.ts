@@ -1,5 +1,5 @@
 import { Category } from '../types/types';
-import { categoriesIcons } from '../../../../../data/constants/icons';
+import { categoriesIcons, subcategoriesIcons } from '../../../../../data/constants/icons';
 
 
 export const clientCategories: Category[] = [
@@ -10,12 +10,23 @@ export const clientCategories: Category[] = [
             {
                 name: 'Orders',
                 link: 'orders',
-                icon: categoriesIcons.money,
+                icon: subcategoriesIcons.shoppingBag,
             },
             {
                 name: 'Debts',
                 link: 'debts',
-                icon: categoriesIcons.money,
+                icon: subcategoriesIcons.money,
+            },
+        ],
+    },
+    {
+        name: 'Reports',
+        icon: categoriesIcons.list,
+        subCategory: [
+            {
+                name: 'CountersAndPrices',
+                link: 'counters-drink-prices',
+                icon: subcategoriesIcons.grocery,
             },
         ],
     },

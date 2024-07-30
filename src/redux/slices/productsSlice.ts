@@ -3,6 +3,7 @@ import { ProductData } from '../../api/types/productData';
 import productsApi from '../../api/methods/productsApi';
 import { createExtendedUpdateState } from '../shared/utils/createExtendedUpdateState';
 import { ExtendedUpdateSliceState } from '../shared/types/extendedUpdateSliceState';
+import { UNAUTHORIZED_STATUS_CODE } from '../../data/constants/constants';
 
 export interface ProductsState extends ExtendedUpdateSliceState {
   products: ProductData[] | null;
@@ -25,13 +26,13 @@ export const fetchProductsAsync = createAsyncThunk(
       const response = await productsApi.getAllProducts();
       return response;
     } catch (error: any) {
-      if (error.status === 401) {
+      if (error.status === UNAUTHORIZED_STATUS_CODE) {
         window.location.reload();
       }
-      
+
       return rejectWithValue(error.message || 'Failed to fetch products');
     }
-  }
+  },
 );
 
 const productsSlice = createSlice({
@@ -44,18 +45,14 @@ const productsSlice = createSlice({
     },
     updatePending: (state) => {
       state.updateStatus = 'pending';
-      state.loading = true;
-      state.errorTranslationKey = null;
       state.updateMessage = 'ProductsUpdPending';
     },
     updateFulfilled: (state) => {
       state.updateStatus = 'success';
-      state.loading = false;
       state.updateMessage = 'ProductUpdSuccess';
     },
     updateRejected: (state) => {
       state.updateStatus = 'error';
-      state.loading = false;
       state.updateMessage = 'ProductErrorMessage';
     },
   },
@@ -77,6 +74,11 @@ const productsSlice = createSlice({
   },
 });
 
-export const { resetState, updatePending, updateFulfilled, updateRejected } = productsSlice.actions;
+export const {
+  resetState,
+  updatePending,
+  updateFulfilled,
+  updateRejected,
+} = productsSlice.actions;
 
 export default productsSlice.reducer;

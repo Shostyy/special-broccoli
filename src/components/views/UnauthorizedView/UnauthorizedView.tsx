@@ -14,7 +14,7 @@ const UnauthorizedView: React.FC = () => {
         errorMessageTitle,
         successMessage,
         successMessageTitle,
-        additionalInfo
+        additionalInfo,
     } = useAppSelector(state => state.unauthorizedView);
 
     const location = useLocation();

@@ -331,7 +331,7 @@ const PostServer: React.FC = () => {
                                 borderRadius: '5px',
                                 padding: '3px',
                                 width: '80px',
-                                color: '#C25458'
+                                color: '#C25458',
                             }}
                         >
                             <CheckCircleOutlineIcon htmlColor='#C25458' />
@@ -347,7 +347,7 @@ const PostServer: React.FC = () => {
                                 borderRadius: '5px',
                                 padding: '3px',
                                 width: '80px',
-                                color: '#000'
+                                color: '#000',
                             }}
                         >
                             <HighlightOffIcon />

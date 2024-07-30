@@ -110,8 +110,6 @@ const RelationshipTable: React.FC = () => {
         return i18n.language === 'uk' ? MRT_Localization_UK : MRT_Localization_EN;
     }, [i18n.language]);
 
-    console.log(selectedUserRelationship);
-
     return (
         <>
             <div className="mb-4 flex gap-4">
@@ -139,13 +137,13 @@ const RelationshipTable: React.FC = () => {
                     localization={currentTableLocale}
                     enablePagination={true}
                     initialState={{
-                        pagination: { pageSize: 7, pageIndex: 0 }
+                        pagination: { pageSize: 7, pageIndex: 0 },
                     }}
                     paginationDisplayMode='pages'
                     muiPaginationProps={{
                         showRowsPerPage: false,
-                        shape: "rounded",
-                        variant: "outlined",
+                        shape: 'rounded',
+                        variant: 'outlined',
                         showFirstButton: false,
                         showLastButton: false,
                     }}

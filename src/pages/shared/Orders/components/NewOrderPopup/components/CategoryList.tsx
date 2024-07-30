@@ -11,6 +11,7 @@ interface CategoryListProps {
   handleClearCategories: () => void;
   updateStatus: 'idle' | 'pending' | 'success' | 'error';
   selectedTradePoint: any | null;
+  initializeError: string | null | undefined;
 }
 
 const CategoryList: React.FC<CategoryListProps> = ({
@@ -20,7 +21,8 @@ const CategoryList: React.FC<CategoryListProps> = ({
   handleSelectAllCategories,
   handleClearCategories,
   updateStatus,
-  selectedTradePoint
+  selectedTradePoint,
+  initializeError,
 }) => {
   const { t } = useTranslation();
 
@@ -55,6 +57,19 @@ const CategoryList: React.FC<CategoryListProps> = ({
           {t('ChooseTradePoint')}
         </span>
       )}
+      <div className='space-y-2'>
+        {initializeError && (
+          <div className='p-2 bg-red-100 border border-red-400 text-red-700 rounded'>
+            <span>{t(initializeError)}</span>
+          </div>
+        )}
+        {updateStatus === 'error' && (
+          <div className='p-2 bg-red-100 border border-red-400 text-red-700 rounded'>
+            <span>{t('PricesAndRemainsUpdError')}</span>
+          </div>
+        )}
+      </div>
+
     </div>
   );
 };

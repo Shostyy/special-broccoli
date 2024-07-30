@@ -47,6 +47,11 @@ const ProfilePopup: React.FC<ProfilePopupProps> = ({ isOpen, onCloseClick, profi
     const handleSignOut = async () => {
         try {
             await dispatch(logoutAsync());
+                  
+            if (localStorage.getItem('userLogin')) {
+                localStorage.removeItem('userLogin');
+            }
+
             window.location.reload();
         } catch (err) {
             console.error('Logout failed:', err);
@@ -72,7 +77,7 @@ const ProfilePopup: React.FC<ProfilePopupProps> = ({ isOpen, onCloseClick, profi
                         className="flex items-center justify-center w-14 h-14 rounded-full shadow-md text-sm font-medium text-white border-2 border-white relative"
                         style={{
                             backgroundColor: bgColor,
-                            boxShadow: `0 0 0 2px ${bgColor}, 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)`
+                            boxShadow: `0 0 0 2px ${bgColor}, 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)`,
                         }}
                     >
 

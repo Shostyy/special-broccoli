@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useAppDispatch, useAppSelector } from '../../../types/hooks';
 import { unauthorizedCategories } from './shared/data/unauthorizedCategories';
 import { adminCategories } from './shared/data/adminCategories';
@@ -8,12 +8,25 @@ import Category from './Category';
 import logo from '../../../assets/images/logo.svg';
 import styles from './styles/styles.module.css';
 import { useTranslation } from 'react-i18next';
+import { closeNavigation, openNavigation } from '../../../redux/slices/navigationSlice';
 
 const Navigation: React.FC = () => {
     const userRole = useAppSelector(state => state.login.userInfo?.role.name || '');
     const isNavigationOpen = useAppSelector(state => state.navigation.isNavigationOpen);
     const { t } = useTranslation();
     const dispatch = useAppDispatch();
+
+    const handleResize = () => {
+        if (window.innerWidth < 1400) {
+            dispatch(closeNavigation());
+        } if (window.innerWidth >= 1400) {
+            dispatch(openNavigation());
+        }
+    }
+
+    useEffect(() => {
+        window.addEventListener('resize', handleResize)
+    }, [window.innerWidth])
 
     const getCategoriesByRole = (userRole: string | undefined) => {
         switch (userRole) {

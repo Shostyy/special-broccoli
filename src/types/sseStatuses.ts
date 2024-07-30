@@ -1,0 +1,1 @@
+export type SseStatuses = 'error' | 'pending' | 'idle' | 'success';

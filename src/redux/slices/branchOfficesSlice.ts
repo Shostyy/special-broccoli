@@ -3,6 +3,7 @@ import branchOfficesApi from '../../api/methods/branchOfficesApi';
 import { BranchOffice } from '../../api/types/branchOffice';
 import { ExtendedUpdateSliceState } from '../shared/types/extendedUpdateSliceState';
 import { createExtendedUpdateState } from '../shared/utils/createExtendedUpdateState';
+import { UNAUTHORIZED_STATUS_CODE } from '../../data/constants/constants';
 
 export interface BranchOfficesState extends ExtendedUpdateSliceState {
     branchOffices: BranchOffice[] | null;
@@ -19,14 +20,13 @@ export const fetchBranchOfficesAsync = createAsyncThunk(
             const response = await branchOfficesApi.getAllBranchOffices();
             return response;
         } catch (error: any) {
-            console.log(error);
-            if (error.status === 401) {
+            if (error.status === UNAUTHORIZED_STATUS_CODE) {
                 window.location.reload();
             }
 
             return rejectWithValue(error.message || 'Failed to fetch branch offices');
         }
-    }
+    },
 );
 
 export const updateBranchOffices = () => {
@@ -72,9 +72,14 @@ const branchOfficeSlice = createSlice({
                 state.errorTranslationKey = action.error.message || 'Failed to fetch branch offices';
                 state.branchOffices = [];
             })
-    }
+    },
 });
 
-export const { resetState, updatePending, updateFulfilled, updateRejected } = branchOfficeSlice.actions;
+export const {
+    resetState,
+    updatePending,
+    updateFulfilled,
+    updateRejected,
+} = branchOfficeSlice.actions;
 
 export default branchOfficeSlice.reducer;

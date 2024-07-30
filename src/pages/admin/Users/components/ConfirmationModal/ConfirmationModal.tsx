@@ -19,7 +19,7 @@ const ConfirmationModal: React.FC<ConfirmationModalProps> = ({ message, onConfir
                         onClick={onConfirm}
                         className="text-white p-2 rounded w-40 mr-2"
                         style={{
-                            backgroundColor: '#c25458'
+                            backgroundColor: '#c25458',
                         }}
                     >
                         {t('Yes')}

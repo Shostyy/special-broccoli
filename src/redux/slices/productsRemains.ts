@@ -3,6 +3,7 @@ import productRemainsApi from '../../api/methods/productRemainsApi';
 import { ExtendedUpdateSliceState } from '../shared/types/extendedUpdateSliceState';
 import { createExtendedUpdateState } from '../shared/utils/createExtendedUpdateState';
 import { ProductsRemain } from '../../api/types/productsRemain';
+import { UNAUTHORIZED_STATUS_CODE } from '../../data/constants/constants';
 
 export interface ProductRemainsState extends ExtendedUpdateSliceState {
     productRemains: ProductsRemain[] | null;
@@ -16,21 +17,25 @@ export const fetchProductRemainsAsync = createAsyncThunk(
     'productRemains/fetchProductRemainsAsync',
     async (branchOfficeId: number, { rejectWithValue }) => {
         try {
-            const response = await productRemainsApi.getAllProductRemainsByBranchOfficeId(branchOfficeId);
+            const response = await productRemainsApi
+                .getAllProductRemainsByBranchOfficeId(branchOfficeId);
             return response;
         } catch (error: any) {
-            if (error.response.status === 401) {
+            if (error.response.status === UNAUTHORIZED_STATUS_CODE) {
                 window.location.reload();
             }
-            
+
             return rejectWithValue(error.message || 'Failed to fetch product remains');
         }
-    }
+    },
 );
 
 export const updateProductRemains = (branchOfficeId: number) => {
     return (dispatch: any) => {
-        productRemainsApi.subscribeForUpdateProductRemains(dispatch, branchOfficeId);
+        productRemainsApi.subscribeForUpdateProductRemains(
+            dispatch,
+            branchOfficeId,
+        );
     };
 };
 
@@ -56,7 +61,7 @@ const productRemainsSlice = createSlice({
         },
         clearRemains: (state) => {
             state.productRemains = null;
-        }
+        },
     },
     extraReducers: (builder) => {
         builder
@@ -73,9 +78,15 @@ const productRemainsSlice = createSlice({
                 state.loading = false;
                 state.errorTranslationKey = action.error.message || 'Failed to fetch product remains';
             })
-    }
+    },
 });
 
-export const { resetState, updatePending, updateFulfilled, updateRejected, clearRemains } = productRemainsSlice.actions;
+export const {
+    resetState,
+    updatePending,
+    updateFulfilled,
+    updateRejected,
+    clearRemains,
+} = productRemainsSlice.actions;
 
 export default productRemainsSlice.reducer;

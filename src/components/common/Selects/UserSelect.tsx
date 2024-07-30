@@ -22,11 +22,11 @@ const UserSelect: React.FC<UserSelectData> = ({
     color = 'red',
     width,
     height,
-    fontSize
+    fontSize,
 }) => {
     const { t } = useTranslation();
 
-    const classes = useStyles({width, height, fontSize});
+    const classes = useStyles({ width, height, fontSize });
 
     const tradePointMap = React.useMemo(() => {
         const map = new Map<string, UserDialog>();

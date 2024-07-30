@@ -17,7 +17,7 @@ import {
     Models,
     CommercialEquipment,
     CommercialEquipmentControls,
-    CounterDrinkPrices
+    CounterDrinkPrices,
 } from '../../../pages/admin';
 import { Account, Orders, Debts } from '../../../pages/shared';
 

@@ -18,7 +18,7 @@ import 'dayjs/locale/en-gb';
 dayjs.locale('uk');
 
 const root = ReactDOM.createRoot(
-  document.getElementById('root') as HTMLElement
+  document.getElementById('root') as HTMLElement,
 );
 
 initializeApp().then(() => {
@@ -35,6 +35,6 @@ initializeApp().then(() => {
           </I18nextProvider>
         </BrowserRouter>
       </Provider>
-    </React.StrictMode>
+    </React.StrictMode>,
   );
 })
