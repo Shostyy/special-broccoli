@@ -13,24 +13,24 @@ interface RequestOptions<T> {
  * @param options - The request options.
  * @returns A Promise resolving to the response data.
  */
-async function request<T, R>({ url, method, data, contentType }: RequestOptions<T>): Promise<R> {
+async function request<T, R>({
+  url,
+  method,
+  data,
+  contentType,
+}: RequestOptions<T>): Promise<R> {
   const config: AxiosRequestConfig = {
     method,
     url,
     withCredentials: true,
     headers: {
-      'Content-Type': contentType || 'application/x-www-form-urlencoded'
+      'Content-Type': contentType || 'application/x-www-form-urlencoded',
     },
     data: method !== 'GET' ? data : undefined,
   };
 
-  try {
-    const response: AxiosResponse<R> = await axios(config);
-    return response.data;
-  } catch (error) {
-    // Handle or throw error as needed
-    throw error;
-  }
+  const response: AxiosResponse<R> = await axios(config);
+  return response.data;
 }
 
 // Client for making API requests

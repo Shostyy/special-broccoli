@@ -1,4 +1,4 @@
-import { updatePending, updateFulfilled, updateRejected, resetState } from '../../redux/slices/branchOfficesSlice';
+import { updatePending, updateFulfilled, updateRejected, resetState, fetchBranchOfficesAsync } from '../../redux/slices/branchOfficesSlice';
 import { BASE_URL, BOTTOM_RIGHT_ERROR_MESSAGE_DURATION, BOTTOM_RIGHT_SUCCESS_MESSAGE_DURATION } from '../../data/constants/constants';
 import { BranchOffice } from '../types/branchOffice';
 import { subscribeForUpdates } from './subscribeForUpdates';
@@ -12,12 +12,10 @@ const errorDuration = BOTTOM_RIGHT_ERROR_MESSAGE_DURATION;
 
 const branchOfficeApi = {
     async getAllBranchOffices(): Promise<BranchOffice[]> {
-        try {
-            const response = await fetchClientFullResponse.get<BranchOffice[]>(fetchDataUrl);
-            return response.data;
-        } catch (error) {
-            throw error;
-        }
+        const response = await fetchClientFullResponse
+            .get<BranchOffice[]>(fetchDataUrl);
+
+        return response.data;
     },
 
     subscribeForUpdateBranchOffices(dispatch: any) {
@@ -29,10 +27,11 @@ const branchOfficeApi = {
             fulfilledAction: updateFulfilled,
             rejectedAction: updateRejected,
             resetAction: resetState,
+            updateDataAction: fetchBranchOfficesAsync,
             successDuration,
             errorDuration,
         });
-    }
+    },
 }
 
 export default branchOfficeApi;

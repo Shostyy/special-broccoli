@@ -1,4 +1,4 @@
-import { updatePending, updateFulfilled, updateRejected, resetState } from '../../redux/slices/materialsSlice';
+import { updatePending, updateFulfilled, updateRejected, resetState, fetchMaterialsAsync } from '../../redux/slices/materialsSlice';
 import { BASE_URL, BOTTOM_RIGHT_ERROR_MESSAGE_DURATION, BOTTOM_RIGHT_SUCCESS_MESSAGE_DURATION } from '../../data/constants/constants';
 import { MaterialData } from '../types/materialData';
 import { subscribeForUpdates } from './subscribeForUpdates';
@@ -12,12 +12,10 @@ const errorDuration = BOTTOM_RIGHT_ERROR_MESSAGE_DURATION;
 
 const materialsApi = {
   async getAllMaterials(): Promise<MaterialData[]> {
-    try {
-      const response = await fetchClientFullResponse.get<MaterialData[]>(fetchDataUrl);
-      return response.data;
-    } catch (error) {
-      throw error;
-    }
+    const response = await fetchClientFullResponse
+      .get<MaterialData[]>(fetchDataUrl);
+
+    return response.data;
   },
 
   subscribeForUpdateMaterials(dispatch: any) {
@@ -29,10 +27,11 @@ const materialsApi = {
       fulfilledAction: updateFulfilled,
       rejectedAction: updateRejected,
       resetAction: resetState,
+      updateDataAction: fetchMaterialsAsync,
       successDuration,
       errorDuration,
     });
-  }
+  },
 }
 
 export default materialsApi;

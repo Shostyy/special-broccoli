@@ -4,12 +4,8 @@ import { RegisterNewUserData } from '../postTypes/registerNewUserData';
 
 const registerApi = {
     async register(userToRegisterData: RegisterNewUserData) {
-        try {
-            await fetchClientFullResponse.post(`${BASE_URL}/api/users/register`, userToRegisterData, 'application/json');
-        } catch (error) {
-            throw error;
-        }
-    }
+        await fetchClientFullResponse.post(`${BASE_URL}/api/users/register`, userToRegisterData, 'application/json');
+    },
 }
 
 export default registerApi;

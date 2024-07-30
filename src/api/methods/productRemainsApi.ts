@@ -4,6 +4,7 @@ import { subscribeForUpdates } from './subscribeForUpdates';
 import { fetchClientFullResponse } from '../fetchClientFullResponse';
 import { ProductsRemain } from '../types/productsRemain';
 import { subscribeForUpdatesNoActions } from './subscribeForUpdatesNoActions';
+import { subscribeForUpdateAll } from './subscribeForUpdateAll';
 
 const fetchDataUrl = `${BASE_URL}/api/product-remains/by-branch-office`;
 const eventSourceUrl = `${BASE_URL}/sse/subscribe/update-product-remains`;
@@ -12,13 +13,11 @@ const successDuration = BOTTOM_RIGHT_SUCCESS_MESSAGE_DURATION;
 const errorDuration = BOTTOM_RIGHT_ERROR_MESSAGE_DURATION;
 
 const productRemainsApi = {
-    async getAllProductRemainsByBranchOfficeId(branchOfficeId: number): Promise<ProductsRemain[]> {
-        try {
-            const response = await fetchClientFullResponse.get<ProductsRemain[]>(`${fetchDataUrl}/${branchOfficeId}`);
-            return response.data;
-        } catch (error) {
-            throw error;
-        }
+    async getAllProductRemainsByBranchOfficeId(
+        branchOfficeId: number,
+    ): Promise<ProductsRemain[]> {
+        const response = await fetchClientFullResponse.get<ProductsRemain[]>(`${fetchDataUrl}/${branchOfficeId}`);
+        return response.data;
     },
 
     subscribeForUpdateProductRemains(dispatch: any, branchOfficeId: number) {
@@ -35,12 +34,24 @@ const productRemainsApi = {
         });
     },
 
-    subscribeForUpdateProductRemainsNoActions(branchOfficeId: number): Promise<void> {
+    subscribeForUpdateProductRemainsNoActions(
+        branchOfficeId: number,
+    ): Promise<void> {
         return subscribeForUpdatesNoActions({
             eventSourceUrl,
-            initializeUpdateUrl: `${initializeUpdateUrl}/${branchOfficeId}`
+            initializeUpdateUrl: `${initializeUpdateUrl}/${branchOfficeId}`,
         });
-    }
+    },
+
+    subscribeForUpdateAllRemains(
+        branchOfficeIds: Set<number>
+    ): Promise<void> {
+        return subscribeForUpdateAll({
+            eventSourceUrl,
+            initializeUpdateUrl: `${initializeUpdateUrl}`,
+            initializeUpdateIds: branchOfficeIds,
+        });
+    },
 }
 
 export default productRemainsApi;

@@ -1,4 +1,4 @@
-import { updatePending, updateFulfilled, updateRejected, resetState } from '../../redux/slices/categoriesSlice';
+import { updatePending, updateFulfilled, updateRejected, resetState, fetchCategoriesAsync } from '../../redux/slices/categoriesSlice';
 import { BASE_URL, BOTTOM_RIGHT_ERROR_MESSAGE_DURATION, BOTTOM_RIGHT_SUCCESS_MESSAGE_DURATION } from '../../data/constants/constants';
 import { fetchClientFullResponse } from '../fetchClientFullResponse';
 import { subscribeForUpdates } from './subscribeForUpdates';
@@ -12,12 +12,10 @@ const errorDuration = BOTTOM_RIGHT_ERROR_MESSAGE_DURATION;
 
 const categoriesApi = {
   async getAllCategories(): Promise<CategoryData[]> {
-    try {
-      const response = await fetchClientFullResponse.get<CategoryData[]>(fetchDataUrl);
-      return response.data;
-    } catch (error) {
-      throw error;
-    }
+    const response = await fetchClientFullResponse
+      .get<CategoryData[]>(fetchDataUrl);
+
+    return response.data;
   },
 
   subscribeForUpdateCategories(dispatch: any) {
@@ -29,6 +27,7 @@ const categoriesApi = {
       fulfilledAction: updateFulfilled,
       rejectedAction: updateRejected,
       resetAction: resetState,
+      updateDataAction: fetchCategoriesAsync,
       successDuration,
       errorDuration,
     });

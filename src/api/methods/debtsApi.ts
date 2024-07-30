@@ -11,21 +11,20 @@ const successDuration = BOTTOM_RIGHT_SUCCESS_MESSAGE_DURATION;
 const errorDuration = BOTTOM_RIGHT_ERROR_MESSAGE_DURATION;
 
 const debtsApi = {
-    async getAllDebts(selectedTradePointId?: number, selectedCustomerId?: number): Promise<DebtData[]> {
-        try {
-            let url = fetchDataUrl;
+    async getAllDebts(
+        selectedTradePointId?: number,
+        selectedCustomerId?: number,
+    ): Promise<DebtData[]> {
+        let url = fetchDataUrl;
 
-            if (selectedTradePointId) {
-                url = `${fetchDataUrl}/filtered?selectedTradePointId=${selectedTradePointId}`;
-            } else if (selectedCustomerId) {
-                url = `${fetchDataUrl}/filtered?selectedCustomerId=${selectedCustomerId}`;
-            }
-
-            const response = await fetchClientFullResponse.get<DebtData[]>(url);
-            return response.data;
-        } catch (error) {
-            throw error;
+        if (selectedTradePointId) {
+            url = `${fetchDataUrl}/filtered?selectedTradePointId=${selectedTradePointId}`;
+        } else if (selectedCustomerId) {
+            url = `${fetchDataUrl}/filtered?selectedCustomerId=${selectedCustomerId}`;
         }
+
+        const response = await fetchClientFullResponse.get<DebtData[]>(url);
+        return response.data;
     },
 
     subscribeForUpdateDebts(dispatch: any) {

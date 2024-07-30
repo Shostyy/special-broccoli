@@ -1,4 +1,4 @@
-import { updatePending, updateFulfilled, updateRejected, resetState } from '../../redux/slices/customersSlice';
+import { updatePending, updateFulfilled, updateRejected, resetState, fetchCustomersAsync } from '../../redux/slices/customersSlice';
 import { BASE_URL, BOTTOM_RIGHT_ERROR_MESSAGE_DURATION, BOTTOM_RIGHT_SUCCESS_MESSAGE_DURATION } from '../../data/constants/constants';
 import { subscribeForUpdates } from './subscribeForUpdates';
 import { fetchClientFullResponse } from '../fetchClientFullResponse';
@@ -12,12 +12,10 @@ const errorDuration = BOTTOM_RIGHT_ERROR_MESSAGE_DURATION;
 
 const customersApi = {
   async getAllCustomers(): Promise<CustomerData[]> {
-    try {
-      const response = await fetchClientFullResponse.get<CustomerData[]>(fetchDataUrl);
-      return response.data;
-    } catch (error) {
-      throw error;
-    }
+    const response = await fetchClientFullResponse
+      .get<CustomerData[]>(fetchDataUrl);
+
+    return response.data;
   },
 
   subscribeForUpdateCustomers(dispatch: any) {
@@ -29,10 +27,11 @@ const customersApi = {
       fulfilledAction: updateFulfilled,
       rejectedAction: updateRejected,
       resetAction: resetState,
+      updateDataAction: fetchCustomersAsync,
       successDuration,
       errorDuration,
     });
-  }
+  },
 }
 
 export default customersApi;

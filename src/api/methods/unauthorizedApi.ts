@@ -5,28 +5,16 @@ import { ResetPasswordUnauthorizedData } from '../postTypes/resetPasswordUnautho
 
 const unauthorizedApi = {
     async completeRegistration(authData: CompleteRegistrationData) {
-        try {
-            await fetchClientFullResponse.post(`${BASE_URL}/api/complete-registration`, authData, 'application/json');
-        } catch (error) {
-            throw error;
-        }
+        await fetchClientFullResponse.post(`${BASE_URL}/api/complete-registration`, authData, 'application/json');
     },
 
     async resetPasswordInit(email: string) {
-        try {
-            await fetchClientFullResponse.post(`${BASE_URL}/api/forgot-password`, email, 'text/plain')
-        } catch (error) {
-            throw error;
-        }
+        await fetchClientFullResponse.post(`${BASE_URL}/api/forgot-password`, email, 'text/plain')
     },
 
     async resetPassword(data: ResetPasswordUnauthorizedData) {
-        try {
-            await  fetchClientFullResponse.post(`${BASE_URL}/api/reset-password`, data, 'application/json')
-        } catch (error) {
-            throw error;
-        }
-    }
+        await fetchClientFullResponse.post(`${BASE_URL}/api/reset-password`, data, 'application/json')
+    },
 }
 
 export default unauthorizedApi;

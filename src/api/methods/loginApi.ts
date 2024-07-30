@@ -4,30 +4,19 @@ import { UserInfo } from '../types/userInfo';
 
 const loginApi = {
     async login(authData: { username: string; password: string }) {
-        try {
-            await fetchClientFullResponse.post(`${BASE_URL}/login`, authData);
-        } catch (error) {
-            throw error;
-        }
+        await fetchClientFullResponse.post(`${BASE_URL}/login`, authData);
     },
 
     async logOut() {
-        try {
-            const response = await fetchClientFullResponse.post(`${BASE_URL}/logout`);
-            return response;
-        } catch (error) {
-            throw error;
-        }
+        sessionStorage.clear();
+        const response = await fetchClientFullResponse.post(`${BASE_URL}/logout`);
+        return response;
     },
 
     async fetchUserInfo(): Promise<UserInfo> {
-        try {
-            const response = await fetchClientFullResponse.get<UserInfo>(BASE_URL);
-            return response.data;
-        } catch (error) {
-            throw error;
-        }
-    }
+        const response = await fetchClientFullResponse.get<UserInfo>(BASE_URL);
+        return response.data;
+    },
 }
 
 export default loginApi;

@@ -4,20 +4,12 @@ import { UserRelationshipInfo } from '../types/userRelationshipInfo';
 
 const relationshipApi = {
     async deleteRelationship(relationshipToDelete: UserRelationshipInfo) {
-        try {
-            await fetchClientFullResponse.delete(`${BASE_URL}/api/users/user-customers`, relationshipToDelete, 'application/json');
-        } catch (error) {
-            throw error;
-        }
+        await fetchClientFullResponse.delete(`${BASE_URL}/api/users/user-customers`, relationshipToDelete, 'application/json');
     },
 
     async addRelationship(relationshipToAdd: UserRelationshipInfo) {
-        try {
-            await fetchClientFullResponse.post(`${BASE_URL}/api/users/user-customers`, relationshipToAdd, 'application/json');
-        } catch (error) {
-            throw error;
-        }
-    }
+        await fetchClientFullResponse.post(`${BASE_URL}/api/users/user-customers`, relationshipToAdd, 'application/json');
+    },
 }
 
 export default relationshipApi;

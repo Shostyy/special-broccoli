@@ -1,6 +1,6 @@
 import axios, { AxiosRequestConfig, AxiosResponse } from 'axios';
 import { RequestBodyType, RequestMethod } from './types/fetchClientShared';
-
+import { BASE_URL, RESPONSE_STATUS_ERROR, RESPONSE_STATUS_OK, UNAUTHORIZED_STATUS_CODE } from '../data/constants/constants';
 
 interface ApiError {
   status: number;
@@ -12,7 +12,7 @@ function requestFullResponse<T>(
   url: string,
   method: RequestMethod = 'GET',
   data?: any,
-  contentType?: RequestBodyType
+  contentType?: RequestBodyType,
 ): Promise<AxiosResponse<T>> {
   // Default content type to 'application/x-www-form-urlencoded' if not provided
   const finalContentType = contentType || 'application/x-www-form-urlencoded';
@@ -23,18 +23,18 @@ function requestFullResponse<T>(
     url: url,
     withCredentials: true,
     headers: {
-      'Content-Type': finalContentType
+      'Content-Type': finalContentType,
     },
-    data: method !== 'GET' ? data : undefined // Include data only for POST, PATCH, and DELETE requests
+    data: method !== 'GET' ? data : undefined, // Include data only for POST, PATCH, and DELETE requests
   };
 
   // Make the HTTP request and handle errors
   return axios(options)
     .then(response => {
       // Check if response status is 200 and data contains specific error message
-      if (response.status === 200 && response.data === "This session has been expired (possibly due to multiple concurrent logins being attempted as the same user).") {
+      if (response.status === RESPONSE_STATUS_OK && response.data === 'This session has been expired (possibly due to multiple concurrent logins being attempted as the same user).') {
         const error: ApiError = {
-          status: 401,
+          status: UNAUTHORIZED_STATUS_CODE,
           message: 'Session expired',
           data: response.data,
         };
@@ -43,7 +43,13 @@ function requestFullResponse<T>(
       return response;
     })
     .catch(error => {
-      const status = error.response?.status || 500;
+      if (!url.includes('login')
+        && error.response?.status === 401
+        && url !== BASE_URL) {
+        window.location.reload();
+      }
+
+      const status = error.response?.status || RESPONSE_STATUS_ERROR;
       const message = error.response?.statusText || 'An error occurred';
       const errorData = error.response?.data;
 

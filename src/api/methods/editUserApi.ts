@@ -4,28 +4,16 @@ import { UserInfo } from '../types/userInfo';
 
 const editUserApi = {
     async editUser(userToEdit: any) {
-        try {
-            await fetchClientFullResponse.post(`${BASE_URL}/api/users/save`, userToEdit, 'application/json');
-        } catch (error) {
-            throw error;
-        }
+        await fetchClientFullResponse.post(`${BASE_URL}/api/users/save`, userToEdit, 'application/json');
     },
 
     async toggleUserBlock(userToToggle: UserInfo) {
-        try {
-            await fetchClientFullResponse.put(`${BASE_URL}/api/users/block/${userToToggle.id}`, userToToggle.blocked, 'application/json')
-        } catch (error) {
-            throw error;
-        }
+        await fetchClientFullResponse.put(`${BASE_URL}/api/users/block/${userToToggle.id}`, userToToggle.blocked, 'application/json')
     },
 
     async deleteUser(userIdToDelete: number) {
-        try {
-            fetchClientFullResponse.delete(`${BASE_URL}/api/users?userId=${userIdToDelete}`)
-        } catch (error) {
-            throw error;
-        }
-    }
+        await fetchClientFullResponse.delete(`${BASE_URL}/api/users?userId=${userIdToDelete}`)
+    },
 }
 
 export default editUserApi;

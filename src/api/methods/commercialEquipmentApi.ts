@@ -1,4 +1,4 @@
-import { updatePending, updateFulfilled, updateRejected, resetState } from '../../redux/slices/commercialEquipmentSlice';
+import { updatePending, updateFulfilled, updateRejected, resetState, fetchCommercialEquipmentAsync } from '../../redux/slices/commercialEquipmentSlice';
 import { BASE_URL, BOTTOM_RIGHT_ERROR_MESSAGE_DURATION, BOTTOM_RIGHT_SUCCESS_MESSAGE_DURATION } from '../../data/constants/constants';
 import { fetchClientFullResponse } from '../fetchClientFullResponse';
 import { CommercialEquipment } from '../types/commercialEquipment';
@@ -12,12 +12,10 @@ const errorDuration = BOTTOM_RIGHT_ERROR_MESSAGE_DURATION;
 
 const commercialEquipmentApi = {
   async getAllCommercialEquipment(): Promise<CommercialEquipment[]> {
-    try {
-      const response = await fetchClientFullResponse.get<CommercialEquipment[]>(fetchDataUrl);
-      return response.data;
-    } catch (error) {
-      throw error;
-    }
+    const response = await fetchClientFullResponse
+      .get<CommercialEquipment[]>(fetchDataUrl);
+
+    return response.data;
   },
 
   subscribeForUpdateCommercialEquipment(dispatch: any) {
@@ -29,10 +27,11 @@ const commercialEquipmentApi = {
       fulfilledAction: updateFulfilled,
       rejectedAction: updateRejected,
       resetAction: resetState,
+      updateDataAction: fetchCommercialEquipmentAsync,
       successDuration,
       errorDuration,
     });
-  }
+  },
 }
 
 export default commercialEquipmentApi;
