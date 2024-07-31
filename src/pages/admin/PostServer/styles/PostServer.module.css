@@ -1,0 +1,88 @@
+/* src/pages/admin/PostServer/styles/PostServer.module.css */
+
+.selectContainer {
+    margin-bottom: 1.5rem;
+}
+
+.label {
+    display: block;
+    margin-bottom: 0.5rem;
+}
+
+.selectWrapper {
+    display: flex;
+    justify-content: space-between;
+}
+
+.select {
+    width: 50%;
+    margin-bottom: 0.5rem;
+    background-color: #fff;
+    z-index: 10;
+}
+
+.buttonContainer {
+    display: flex;
+    gap: 2rem;
+}
+
+.actionButton {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    border-radius: 5px;
+    padding: 3px;
+    width: 80px;
+}
+
+.actionButtonsContainer {
+    display: flex;
+    gap: 5px;
+}
+
+.saveButton, .cancelButton {
+    display: flex;
+    flex-direction: column;
+    border: 1px solid #C25458;
+    align-items: center;
+    border-radius: 5px;
+    padding: 3px;
+    width: 80px;
+    color: #C25458;
+    -webkit-border-radius: 5px;
+    -moz-border-radius: 5px;
+    -ms-border-radius: 5px;
+    -o-border-radius: 5px;
+}
+
+.saveButton {
+    border: 1px solid #C25458;
+    color: #C25458;
+}
+
+.cancelButton {
+    border: 1px solid #000;
+    color: #000;
+}
+
+.actionButtonIcon {
+    margin-bottom: 2px;
+}
+
+.actionIconsContainer {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.actionIcon {
+    color: #6B7280;
+    padding: 0.25rem;
+    border-radius: 0.25rem;
+}
+
+.formInput {
+    width: 100%;
+    padding: 0.5rem;
+    border: 1px solid #D1D5DB;
+    border-radius: 0.25rem;
+}

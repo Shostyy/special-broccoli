@@ -3,6 +3,14 @@ import { UserInfo } from '../../api/types/userInfo';
 import loginApi from '../../api/methods/loginApi';
 import { localClient } from '../../utils/localClient';
 
+// Define the initial state for the login slice
+const initialState: LoginState = {
+  loading: false,
+  error: null,
+  userInfo: null,
+};
+
+// Define the interface for the login state
 export interface LoginState {
   loading: boolean;
   error: string | null;
@@ -11,7 +19,7 @@ export interface LoginState {
 
 // Async thunk to fetch user info
 export const fetchUserInfoAsync = createAsyncThunk<
-  UserInfo, // The returned type of the thunk
+  UserInfo | null, // Allow null for 401 error handling
   void, // The type of the first argument (thunk argument)
   { rejectValue: string } // The type of the returned rejection value
 >(
@@ -22,10 +30,14 @@ export const fetchUserInfoAsync = createAsyncThunk<
       localClient.write('userLogin', response.login);
       return response;
     } catch (error: any) {
-      if (error.status === 502) {
-        return rejectWithValue('502');
+      if (error) {
+        if (error.status === 502) {
+          return rejectWithValue('Failed to fetch user info'); // Handle 502 error specifically
+        } else if (error.status === 401) {
+          return null; // Handle 401 without rejecting
+        }
       }
-      return rejectWithValue('Failed to fetch user info');
+      return rejectWithValue('An unexpected error occurred');
     }
   },
 );
@@ -65,17 +77,12 @@ export const logoutAsync = createAsyncThunk<
   },
 );
 
-const initialState: LoginState = {
-  loading: true,
-  error: null,
-  userInfo: null,
-};
-
+// Create the login slice
 const loginSlice = createSlice({
   name: 'login',
   initialState,
   reducers: {
-    resetState: () => initialState,
+    resetState: () => initialState, // Reset the state to initial values
   },
   extraReducers: (builder) => {
     builder
@@ -96,11 +103,11 @@ const loginSlice = createSlice({
       })
       .addCase(fetchUserInfoAsync.fulfilled, (state, action) => {
         state.loading = false;
-        state.userInfo = action.payload;
+        state.userInfo = action.payload; // Update user info
       })
       .addCase(fetchUserInfoAsync.rejected, (state, action) => {
         state.loading = false;
-        state.error = action.payload || 'Failed to fetch user info';
+        state.error = action.payload || null;
       })
       .addCase(logoutAsync.pending, (state) => {
         state.loading = true;
@@ -108,7 +115,7 @@ const loginSlice = createSlice({
       })
       .addCase(logoutAsync.fulfilled, (state) => {
         state.loading = false;
-        state.userInfo = null;
+        state.userInfo = null; // Clear user info on logout
       })
       .addCase(logoutAsync.rejected, (state, action) => {
         state.loading = false;
@@ -117,6 +124,6 @@ const loginSlice = createSlice({
   },
 });
 
+// Export actions and reducer
 export const { resetState } = loginSlice.actions;
-
 export default loginSlice.reducer;

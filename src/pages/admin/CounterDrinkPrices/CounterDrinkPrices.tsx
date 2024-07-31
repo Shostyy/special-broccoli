@@ -500,10 +500,10 @@ const CounterDrinkPrices: React.FC = () => {
                                                             </div>
                                                             <div className="text-gray-500">
                                                                 {priceChanges.some(change => change.counterId === counter.counterId) ? (
-                                                                    <EditIcon /> // Replace with the actual Edit icon component
+                                                                    <EditIcon />
                                                                 ) : (
                                                                     savedPriceChanges?.some(saved => saved.counterId === counter.counterId) && (
-                                                                        <SaveAsIcon /> // Replace with the actual Saved icon component
+                                                                        <SaveAsIcon />
                                                                     )
                                                                 )}
                                                             </div>
@@ -695,7 +695,7 @@ const CounterDrinkPrices: React.FC = () => {
                         customersList={customersForSelect || []}
                         onSelect={handleSelectCustomer}
                         height={50}
-                        width={250}
+                        width={220}
                         color="red"
                         selectedCustomerList={selectedCustomers || []}
                     />
@@ -703,7 +703,7 @@ const CounterDrinkPrices: React.FC = () => {
                         tradePointsList={tradePointsForSelect || []}
                         onSelect={handleSelectTradePoint}
                         height={50}
-                        width={250}
+                        width={240}
                         color="red"
                         selectedTradePointList={selectedTradePoints || []}
                     />
@@ -711,7 +711,7 @@ const CounterDrinkPrices: React.FC = () => {
                         equipmentList={commercialEquipmentForSelect || []}
                         onSelect={handleSelectCommercialEquipment}
                         height={50}
-                        width={250}
+                        width={240}
                         color="red"
                         selectedEquipmentList={selectedEquipment || []}
                     />
@@ -721,12 +721,14 @@ const CounterDrinkPrices: React.FC = () => {
                         onClick={handleResetFilters}
                         translationKey="ResetFilters"
                         icon={appIcons.closeRed}
+                        width={180}
                     />
                     {activeTab !== 'PriceChangeHistory' && (
                         <GeneralButton
                             onClick={handleFormReport}
                             translationKey='Form'
                             icon={appIcons.addRed}
+                            width={180}
                             disabled={isLoading || !selectedCustomers}
                         />
                     )}

@@ -3,7 +3,6 @@ import { Category as CategoryType } from './shared/types/types';
 import { useTranslation } from 'react-i18next';
 import SubCategory from './SubCategory';
 import styles from './styles/styles.module.css';
-import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
 import { appIcons } from '../../../data/constants/icons';
 import { Tooltip } from '@mui/material';
 
@@ -55,7 +54,7 @@ const Category: React.FC<CategoryProps> = ({ category, isNavigationOpen }) => {
                     <span className={`${styles.categoryName} ${styles.categoryNameHidden}`}>{t(category.name)}</span>
                 )}
             </button>
-            <ul className={`${styles.subcategoryList} ${isCategoryVisible ? styles.subcategoryListVisible : ''}`}>
+            <ul className={`${styles.subcategoryList} ${isCategoryVisible ? styles.subcategoryListVisible : styles.subcategoryListHide}`}>
                 {category.subCategory?.map((sub, index) => (
                     <SubCategory key={index} subCategory={sub} isNavigationOpen={isNavigationOpen} />
                 ))}

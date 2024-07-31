@@ -226,6 +226,11 @@
     opacity: 1;
 }
 
+.subcategoryListHide {
+    opacity: 0;
+    pointer-events: none;
+}
+
 /* Arrow */
 .arrow {
     width: 13px;

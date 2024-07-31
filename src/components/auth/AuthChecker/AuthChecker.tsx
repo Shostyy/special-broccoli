@@ -1,14 +1,27 @@
 import React, { useEffect, useState } from 'react';
-import { useAppSelector } from '../../../types/hooks';
+import { useAppSelector, useAppDispatch } from '../../../types/hooks';
 import { UnauthorizedView } from '../../views/UnauthorizedView';
 import { AuthorizedView } from '../../views/AuthorizedView';
 import { CountdownModal, FullPageLoader } from '../../common';
+import { fetchUserInfoAsync } from '../../../redux/slices/loginSlice';
 
 const AuthChecker: React.FC = () => {
+    const dispatch = useAppDispatch();
     const userInfo = useAppSelector(state => state.login.userInfo);
     const isLoading = useAppSelector(state => state.login.loading);
     const error = useAppSelector(state => state.login.error);
     const [showModal, setShowModal] = useState(false);
+    const [hasCheckedAuth, setHasCheckedAuth] = useState(false);
+
+    useEffect(() => {
+        dispatch(fetchUserInfoAsync());
+    }, [dispatch]);
+
+    useEffect(() => {
+        if (!isLoading) {
+            setHasCheckedAuth(true);
+        }
+    }, [isLoading]);
 
     useEffect(() => {
         if (error === 'Failed to fetch user info') {
@@ -20,24 +33,28 @@ const AuthChecker: React.FC = () => {
         window.location.reload();
     };
 
-    if (isLoading) {
+    if (!hasCheckedAuth || isLoading) {
         return <FullPageLoader />;
-    } 
+    }
 
     if (showModal) {
         return (
-            <div>
-                <UnauthorizedView />
+            <>
+                <FullPageLoader />
                 <CountdownModal onReload={handleReload} />
-            </div>
+            </>
         );
-    } 
-    
-    if (!userInfo) {
-        return <UnauthorizedView />;
-    } 
+    }
 
-    return <AuthorizedView />;
+    if (!userInfo && hasCheckedAuth) {
+        return <UnauthorizedView />;
+    }
+
+    if (userInfo) {
+        return <AuthorizedView />;
+    }
+
+    return <FullPageLoader />;
 }
 
 export default AuthChecker;

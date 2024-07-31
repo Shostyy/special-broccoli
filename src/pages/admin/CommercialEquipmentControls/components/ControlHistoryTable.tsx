@@ -15,7 +15,6 @@ interface ControlHistoryTableProps {
 
 const ControlHistoryTable: React.FC<ControlHistoryTableProps> = ({ controlHistory, onRowClick }) => {
     const { t } = useTranslation();
-
     const [filters, setFilters] = useState({
         id: '',
         dateCreatedStart: null,
@@ -33,17 +32,14 @@ const ControlHistoryTable: React.FC<ControlHistoryTableProps> = ({ controlHistor
     useEffect(() => {
         let filtered = controlHistory;
 
-        // Filter by ID
         if (filters.id) {
             filtered = filtered.filter(control => control.id.toString().includes(filters.id));
         }
 
-        // Filter by Trade Point ID
         if (filters.tradePointId) {
             filtered = filtered.filter(control => control.tradePointId.toString().includes(filters.tradePointId));
         }
 
-        // Filter by Trade Point Name
         if (filters.tradePointName) {
             filtered = filtered.filter(control => control.tradePointName.toLowerCase().includes(filters.tradePointName.toLowerCase()));
         }
@@ -63,18 +59,18 @@ const ControlHistoryTable: React.FC<ControlHistoryTableProps> = ({ controlHistor
             accessorKey: 'date',
             header: t('CreationDate'),
             filterFn: 'includesString',
-            size: 100,
+            size: 200,
             Cell: ({ cell }) => format(parseISO(cell.getValue<string>()), 'dd/MM/yy HH:mm'),
             Filter: () => (
-                <div style={{ display: 'flex', flexDirection: 'row', gap: '0.5rem', width: '220px' }}>
+                <div style={{ display: 'flex', flexDirection: 'row', gap: '0.5rem', width: '280px' }}>
                     <DatePicker
                         value={filters.dateCreatedStart}
                         onChange={(newValue) => handleFilterChange('dateCreatedStart', newValue)}
                         label={t('StartDate')}
                         views={['year', 'month', 'day']}
                         sx={{
-                            width: '150px',
                             ...customDatePickerStyles,
+                            width: '120px',
                             borderColor: 'rgba(0, 0, 0, 0.23)',
                         }}
                     />
@@ -84,8 +80,8 @@ const ControlHistoryTable: React.FC<ControlHistoryTableProps> = ({ controlHistor
                         label={t('EndDate')}
                         views={['year', 'month', 'day']}
                         sx={{
-                            width: '150px',
                             ...customDatePickerStyles,
+                            width: '120px',
                             borderColor: 'rgba(0, 0, 0, 0.23)',
                         }}
                     />
@@ -131,7 +127,7 @@ const ControlHistoryTable: React.FC<ControlHistoryTableProps> = ({ controlHistor
         <SimpleTable
             columns={columns}
             rows={filteredControlHistory}
-            onRowClick={onRowClick} // Ensure this is passed correctly
+            onRowClick={onRowClick}
         />
     );
 };
